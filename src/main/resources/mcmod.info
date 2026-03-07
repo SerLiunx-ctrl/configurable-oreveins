@@ -1,0 +1,17 @@
+[
+  {
+    "modid": "configurableoreveins",
+    "name": "Configurable Ore Veins",
+    "description": "Config-driven ore vein generation for Minecraft 1.12.2.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": ["zhangwq"],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
+

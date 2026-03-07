@@ -1,0 +1,74 @@
+buildscript {
+    repositories {
+        maven { url = "https://maven.minecraftforge.net/" }
+        mavenCentral()
+    }
+    dependencies {
+        classpath "net.minecraftforge.gradle:ForgeGradle:3.+"
+    }
+}
+
+apply plugin: "net.minecraftforge.gradle"
+apply plugin: "java"
+apply plugin: "eclipse"
+
+version = project.mod_version
+group = project.maven_group
+archivesBaseName = project.archives_base_name
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = "1.8"
+
+minecraft {
+    mappings channel: project.mappings_channel, version: project.mappings_version
+
+    runs {
+        client {
+            workingDirectory project.file("run")
+            property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP"
+            property "forge.logging.console.level", "debug"
+        }
+
+        server {
+            property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP"
+            property "forge.logging.console.level", "debug"
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url = "https://dvs1.progwml6.com/files/maven/" }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${project.forge_version}"
+    compileOnly fg.deobf("mezz.jei:jei_1.12.2:${project.jei_version}:api")
+    runtimeOnly fg.deobf("mezz.jei:jei_1.12.2:${project.jei_version}")
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft_version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include "mcmod.info"
+        expand(
+            "version": project.version,
+            "mcversion": project.minecraft_version
+        )
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "mcmod.info"
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+sourceSets.each {
+    def dir = layout.buildDirectory.file("sourcesSets/$it.name").get().asFile
+    it.output.resourcesDir = dir
+    it.java.outputDir = dir
+}

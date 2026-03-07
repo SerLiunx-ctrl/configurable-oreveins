@@ -1,0 +1,35 @@
+item.configurableoreveins.vein_locator.name=矿脉定位仪器
+
+gui.configurableoreveins.vein_locator.title=矿脉定位仪器
+gui.configurableoreveins.vein_locator.search_label=搜索
+gui.configurableoreveins.vein_locator.search_button=搜索
+gui.configurableoreveins.vein_locator.sort_label=排序
+gui.configurableoreveins.vein_locator.sort.distance=距离
+gui.configurableoreveins.vein_locator.sort.name=名称
+gui.configurableoreveins.vein_locator.range=范围: %s 区块
+gui.configurableoreveins.vein_locator.found=结果: %s
+gui.configurableoreveins.vein_locator.empty=附近没有已生成的矿脉
+gui.configurableoreveins.vein_locator.clear=清除
+gui.configurableoreveins.vein_locator.done=完成
+gui.configurableoreveins.vein_locator.mark_mined=挖空
+gui.configurableoreveins.vein_locator.unmark_mined=恢复
+gui.configurableoreveins.vein_locator.mined_prefix=[已挖空]
+gui.configurableoreveins.vein_locator.tooltip.size=规模: %s 方块
+gui.configurableoreveins.vein_locator.tooltip.ore_stats=矿石统计:
+gui.configurableoreveins.vein_locator.tooltip.ore_stats_unavailable=矿石统计：暂无数据
+gui.configurableoreveins.vein_locator.tooltip.ore_entry=%s x%s
+gui.configurableoreveins.vein_locator.tooltip.unknown_ore=未知矿石 x %s
+
+jei.configurableoreveins.ore_vein.category=矿脉来源
+jei.configurableoreveins.ore_vein.locator_info=在 JEI 中查看矿石来源矿脉，并显示附近已生成矿脉的位置与统计。
+jei.configurableoreveins.ore_vein.dimensions=维度: %s
+jei.configurableoreveins.ore_vein.height=高度: Y %s - %s
+jei.configurableoreveins.ore_vein.location=最近位置: %s, %s, %s
+jei.configurableoreveins.ore_vein.location_unavailable=附近 %s 区块内没有已记录的位置
+jei.configurableoreveins.ore_vein.nearby_count=附近已生成: %s 条（范围 %s 区块）
+jei.configurableoreveins.ore_vein.stats=最近矿脉统计:
+jei.configurableoreveins.ore_vein.stats_unavailable=最近矿脉统计: 暂无数据
+jei.configurableoreveins.ore_vein.output_weight=%s，配置权重约 %s%%（权重值 %s）
+jei.configurableoreveins.ore_vein.more_outputs=还有 %s 种产物
+jei.configurableoreveins.ore_vein.all_dimensions=全部
+jei.configurableoreveins.ore_vein.unknown_ore=未知矿石

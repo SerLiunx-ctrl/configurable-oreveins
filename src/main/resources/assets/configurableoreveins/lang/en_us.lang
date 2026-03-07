@@ -1,0 +1,35 @@
+item.configurableoreveins.vein_locator.name=Vein Locator
+
+gui.configurableoreveins.vein_locator.title=Vein Locator
+gui.configurableoreveins.vein_locator.search_label=Search
+gui.configurableoreveins.vein_locator.search_button=Search
+gui.configurableoreveins.vein_locator.sort_label=Sort
+gui.configurableoreveins.vein_locator.sort.distance=Dst
+gui.configurableoreveins.vein_locator.sort.name=A-Z
+gui.configurableoreveins.vein_locator.range=Range: %s chunks
+gui.configurableoreveins.vein_locator.found=Found: %s
+gui.configurableoreveins.vein_locator.empty=No nearby generated veins
+gui.configurableoreveins.vein_locator.clear=Clear
+gui.configurableoreveins.vein_locator.done=Done
+gui.configurableoreveins.vein_locator.mark_mined=Mined
+gui.configurableoreveins.vein_locator.unmark_mined=Restore
+gui.configurableoreveins.vein_locator.mined_prefix=[Mined]
+gui.configurableoreveins.vein_locator.tooltip.size=Size: %s blocks
+gui.configurableoreveins.vein_locator.tooltip.ore_stats=Ore stats:
+gui.configurableoreveins.vein_locator.tooltip.ore_stats_unavailable=Ore stats: unavailable
+gui.configurableoreveins.vein_locator.tooltip.ore_entry=%s x%s
+gui.configurableoreveins.vein_locator.tooltip.unknown_ore=Unknown ore x%s
+
+jei.configurableoreveins.ore_vein.category=Ore Vein Sources
+jei.configurableoreveins.ore_vein.locator_info=View vein sources in JEI, including nearby generated vein positions and recorded ore stats.
+jei.configurableoreveins.ore_vein.dimensions=Dimensions: %s
+jei.configurableoreveins.ore_vein.height=Height: Y %s - %s
+jei.configurableoreveins.ore_vein.location=Nearest: %s, %s, %s
+jei.configurableoreveins.ore_vein.location_unavailable=No recorded vein locations within %s chunks
+jei.configurableoreveins.ore_vein.nearby_count=Nearby generated: %s (range %s chunks)
+jei.configurableoreveins.ore_vein.stats=Nearest vein stats:
+jei.configurableoreveins.ore_vein.stats_unavailable=Nearest vein stats: unavailable
+jei.configurableoreveins.ore_vein.output_weight=%s, config weight about %s%% (weight %s)
+jei.configurableoreveins.ore_vein.more_outputs=+%s more outputs
+jei.configurableoreveins.ore_vein.all_dimensions=All
+jei.configurableoreveins.ore_vein.unknown_ore=Unknown ore
