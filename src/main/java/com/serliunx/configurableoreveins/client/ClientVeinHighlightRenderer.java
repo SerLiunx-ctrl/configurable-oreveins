@@ -1,7 +1,6 @@
 package com.serliunx.configurableoreveins.client;
 
 import com.serliunx.configurableoreveins.config.ClientConfig;
-import com.serliunx.configurableoreveins.config.GeneralConfig;
 import com.serliunx.configurableoreveins.vein.LocatorVeinInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -18,13 +17,14 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
-*/
+ */
 public class ClientVeinHighlightRenderer {
 
     /**
      * 处理渲染事件, 是否要高亮显示矿脉
      */
     @SubscribeEvent
+    @SuppressWarnings("unused")
     public void onRenderWorldLast(RenderWorldLastEvent event) {
         LocatorVeinInfo target = ClientLocatorState.getHighlightedVein();
         Minecraft minecraft = Minecraft.getMinecraft();
@@ -35,6 +35,7 @@ public class ClientVeinHighlightRenderer {
                 || minecraft.world.provider.getDimension() != target.getDimensionId()) {
             return;
         }
+
         double partialTicks = event.getPartialTicks();
         double viewerX = viewer.lastTickPosX + ((viewer.posX - viewer.lastTickPosX) * partialTicks);
         double viewerY = viewer.lastTickPosY + ((viewer.posY - viewer.lastTickPosY) * partialTicks);

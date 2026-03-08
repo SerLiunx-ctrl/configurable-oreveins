@@ -9,24 +9,21 @@ import java.util.List;
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
-*/
+ */
 public class ModConfigData {
+
     private List<VeinDefinition> veins = new ArrayList<>();
 
     /**
-     * 获取当前矿脉配置列表。
-     *
-     * @return 处理结果。
+     * 获取当前矿脉配置列表
     */
     public List<VeinDefinition> getVeins() {
-        return veins == null ? new ArrayList<VeinDefinition>() : veins;
+        return veins == null ? new ArrayList<>() : veins;
     }
 
     /**
-     * 设置 Veins。
-     *
-     * @param veins 参数 veins。
-    */
+     * 设置矿脉配置列表
+     */
     public void setVeins(List<VeinDefinition> veins) {
         this.veins = veins;
     }

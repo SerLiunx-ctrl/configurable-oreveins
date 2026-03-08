@@ -4,13 +4,14 @@ import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 /**
- * 服务端发送到客户端的矿脉信息载体。
+ * 服务端发送到客户端的矿脉信息载体.
  *
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
-*/
+ */
 public class LocatorVeinInfo {
+
     private final int veinHash;
     private final boolean mined;
     private final int dimensionId;
@@ -27,20 +28,6 @@ public class LocatorVeinInfo {
     private final int[] oreStateKeys;
     private final int[] oreCounts;
 
-    /**
-     * 构造 LocatorVeinInfo 实例。
-     *
-     * @param dimensionId 参数 dimensionId。
-     * @param chunkX 参数 chunkX。
-     * @param chunkZ 参数 chunkZ。
-     * @param centerX 参数 centerX。
-     * @param centerY 参数 centerY。
-     * @param centerZ 参数 centerZ。
-     * @param name 参数 name。
-     * @param highlightColor 参数 highlightColor。
-     * @param iconBlockId 参数 iconBlockId。
-     * @param iconMeta 参数 iconMeta。
-    */
     public LocatorVeinInfo(
             int veinHash,
             boolean mined,
@@ -72,23 +59,6 @@ public class LocatorVeinInfo {
                 new int[0]);
     }
 
-    /**
-     * 构造 LocatorVeinInfo 实例。
-     *
-     * @param dimensionId 参数 dimensionId。
-     * @param chunkX 参数 chunkX。
-     * @param chunkZ 参数 chunkZ。
-     * @param centerX 参数 centerX。
-     * @param centerY 参数 centerY。
-     * @param centerZ 参数 centerZ。
-     * @param name 参数 name。
-     * @param highlightColor 参数 highlightColor。
-     * @param iconBlockId 参数 iconBlockId。
-     * @param iconMeta 参数 iconMeta。
-     * @param totalBlocks 参数 totalBlocks。
-     * @param oreStateKeys 参数 oreStateKeys。
-     * @param oreCounts 参数 oreCounts。
-    */
     public LocatorVeinInfo(
             int veinHash,
             boolean mined,
@@ -123,11 +93,8 @@ public class LocatorVeinInfo {
     }
 
     /**
-     * 从网络字节流读取矿脉信息。
-     *
-     * @param buf 参数 buf。
-     * @return 处理结果。
-    */
+     * 从网络字节流读取矿脉信息.
+     */
     public static LocatorVeinInfo fromBytes(ByteBuf buf) {
         return new LocatorVeinInfo(
                 buf.readInt(),
@@ -151,7 +118,7 @@ public class LocatorVeinInfo {
      * 将矿脉信息写入网络字节流。
      *
      * @param buf 参数 buf。
-    */
+     */
     public void toBytes(ByteBuf buf) {
         buf.writeInt(veinHash);
         buf.writeBoolean(mined);

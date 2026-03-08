@@ -13,8 +13,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
-*/
+ */
 public class ClientNearbyVeinSync {
+
     private static final int REQUEST_INTERVAL_TICKS = 100;
 
     private long lastRequestTick = Long.MIN_VALUE;
@@ -26,6 +27,7 @@ public class ClientNearbyVeinSync {
      * @param event 参数 event。
     */
     @SubscribeEvent
+    @SuppressWarnings("unused")
     public void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END || !Loader.isModLoaded("jei")) {
             return;

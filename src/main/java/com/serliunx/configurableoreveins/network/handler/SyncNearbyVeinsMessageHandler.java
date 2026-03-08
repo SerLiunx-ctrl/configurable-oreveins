@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
-*/
+ */
 public final class SyncNearbyVeinsMessageHandler implements IMessageHandler<SyncNearbyVeinsMessage, IMessage> {
 
     /**

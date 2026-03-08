@@ -1,16 +1,12 @@
 package com.serliunx.configurableoreveins.client.gui;
 
-import com.serliunx.configurableoreveins.client.ClientNearbyVeinCache;
 import com.serliunx.configurableoreveins.client.ClientLocatorState;
+import com.serliunx.configurableoreveins.client.ClientNearbyVeinCache;
 import com.serliunx.configurableoreveins.item.VeinLocatorItem;
-import com.serliunx.configurableoreveins.vein.LocatorVeinInfo;
-import com.serliunx.configurableoreveins.network.message.MarkVeinMinedMessage;
 import com.serliunx.configurableoreveins.network.NetworkHandler;
+import com.serliunx.configurableoreveins.network.message.MarkVeinMinedMessage;
 import com.serliunx.configurableoreveins.network.message.SetLocatorTargetMessage;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import com.serliunx.configurableoreveins.vein.LocatorVeinInfo;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
@@ -25,13 +21,18 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Mouse;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 /**
  * 矿脉定位器客户端界面渲染逻辑
  *
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
-*/
+ */
 public class VeinLocatorGui extends GuiScreen {
 
     private static final int BUTTON_CLEAR_ID = 0;
@@ -51,9 +52,9 @@ public class VeinLocatorGui extends GuiScreen {
     private final EnumHand hand;
     private final int rangeChunks;
     private final List<LocatorVeinInfo> allVeins;
-    private final List<LocatorVeinInfo> visibleVeins = new ArrayList<LocatorVeinInfo>();
-    private final List<GuiButton> veinButtons = new ArrayList<GuiButton>();
-    private final List<GuiButton> markButtons = new ArrayList<GuiButton>();
+    private final List<LocatorVeinInfo> visibleVeins = new ArrayList<>();
+    private final List<GuiButton> veinButtons = new ArrayList<>();
+    private final List<GuiButton> markButtons = new ArrayList<>();
     private int scrollOffset = 0;
     private int guiLeft;
     private int guiTop;
@@ -63,13 +64,6 @@ public class VeinLocatorGui extends GuiScreen {
     private GuiTextField searchField;
     private SortMode sortMode = SortMode.DISTANCE_ASC;
 
-    /**
-     * 构造 VeinLocatorGui 实例。
-     *
-     * @param handOrdinal 参数 handOrdinal。
-     * @param rangeChunks 参数 rangeChunks。
-     * @param veins 参数 veins。
-    */
     public VeinLocatorGui(int handOrdinal, int rangeChunks, List<LocatorVeinInfo> veins) {
         this.hand = EnumHand.values()[Math.max(0, Math.min(EnumHand.values().length - 1, handOrdinal))];
         this.rangeChunks = rangeChunks;
@@ -665,6 +659,7 @@ public class VeinLocatorGui extends GuiScreen {
         return createItemStackFromPackedState((vein.getIconBlockId() << 4) | (vein.getIconMeta() & 15));
     }
 
+    @SuppressWarnings("all")
     private ItemStack createItemStackFromPackedState(int packedState) {
         if (packedState <= 0) {
             return ItemStack.EMPTY;
@@ -673,24 +668,14 @@ public class VeinLocatorGui extends GuiScreen {
         int blockId = packedState >>> 4;
         int meta = packedState & 15;
         Block block = Block.getBlockById(blockId);
-        if (block == null) {
-            return ItemStack.EMPTY;
-        }
         Item item = Item.getItemFromBlock(block);
-        if (item == null) {
-            return ItemStack.EMPTY;
-        }
 
         return new ItemStack(item, 1, meta);
     }
 
     /**
-     * 获取 HoveredVein。
-     *
-     * @param mouseX 参数 mouseX。
-     * @param mouseY 参数 mouseY。
-     * @return 处理结果。
-    */
+     * 获取需要显示悬浮的矿脉信息
+     */
     private LocatorVeinInfo getHoveredVein(int mouseX, int mouseY) {
         for (int row = 0; row < veinButtons.size(); row++) {
             GuiButton button = veinButtons.get(row);
@@ -708,14 +693,8 @@ public class VeinLocatorGui extends GuiScreen {
         return null;
     }
 
-    /**
-     * 构建 TooltipOreLines。
-     *
-     * @param vein 参数 vein。
-     * @return 处理结果。
-    */
     private List<TooltipOreLine> buildTooltipOreLines(LocatorVeinInfo vein) {
-        List<TooltipOreLine> lines = new ArrayList<TooltipOreLine>();
+        List<TooltipOreLine> lines = new ArrayList<>();
         int[] packedStates = vein.getOreStateKeys();
         int[] counts = vein.getOreCounts();
         int limit = Math.min(packedStates.length, counts.length);

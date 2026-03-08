@@ -7,14 +7,15 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 /**
- * 原版矿物生成禁用器。
+ * 原版矿物生成禁用处理
  *
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
-*/
+ */
+@SuppressWarnings("unused")
 public final class VanillaOreGenerationDisabler {
-    /** 构造 VanillaOreGenerationDisabler 实例。 */
+
     public VanillaOreGenerationDisabler() {}
 
     /**

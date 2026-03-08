@@ -1,32 +1,29 @@
 package com.serliunx.configurableoreveins.util;
 
 import com.serliunx.configurableoreveins.ConfigurableOreVeinsMod;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
+import javax.annotation.Nullable;
+import java.util.*;
+
 /**
- * 方块状态解析与缓存工具。
+ * 方块状态解析与缓存工具.
  *
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
-*/
+ */
 public final class BlockStateResolver {
-    private static final Map<String, IBlockState> STATE_CACHE =
-            Collections.synchronizedMap(new HashMap<String, IBlockState>());
-    private static final Map<String, Block> BLOCK_CACHE =
-            Collections.synchronizedMap(new HashMap<String, Block>());
 
-    /** 构造 BlockStateResolver 实例。 */
+    private static final Map<String, IBlockState> STATE_CACHE =
+            Collections.synchronizedMap(new HashMap<>());
+    private static final Map<String, Block> BLOCK_CACHE =
+            Collections.synchronizedMap(new HashMap<>());
+
     private BlockStateResolver() {}
 
     /**
@@ -68,13 +65,13 @@ public final class BlockStateResolver {
     }
 
     /**
-     * 批量解析方块列表。
+     * 批量解析方块列表.
      *
-     * @param blockNames 参数 blockNames。
-     * @return 处理结果。
+     * @param blockNames 方块名称
+     * @return 方块列表
     */
     public static List<Block> resolveBlocks(List<String> blockNames) {
-        List<Block> resolved = new ArrayList<Block>();
+        List<Block> resolved = new ArrayList<>();
         if (blockNames == null) {
             return resolved;
         }
@@ -92,12 +89,6 @@ public final class BlockStateResolver {
         return resolved;
     }
 
-    /**
-     * 解析 Block。
-     *
-     * @param blockName 参数 blockName。
-     * @return 处理结果。
-    */
     @Nullable
     private static Block resolveBlock(String blockName) {
         if (BLOCK_CACHE.containsKey(blockName)) {

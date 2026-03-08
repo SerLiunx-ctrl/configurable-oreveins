@@ -5,9 +5,6 @@ import com.serliunx.configurableoreveins.config.VeinDefinition;
 import com.serliunx.configurableoreveins.data.VeinWorldData;
 import com.serliunx.configurableoreveins.data.VeinWorldData.StatRecord;
 import com.serliunx.configurableoreveins.util.BlockStateResolver;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.ResourceLocation;
@@ -18,14 +15,19 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.fml.common.IWorldGenerator;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 /**
  * 矿脉世界生成器。
  *
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
-*/
+ */
 public class ConfigurableOreWorldGenerator implements IWorldGenerator {
+
     private static final int MIN_VEIN_SPACING_CHUNKS = 2;
     private static final long CHUNK_SELECTION_SALT = 0x4F56474C4F4E474CL;
     private static final long VEIN_SELECTION_SALT = 0x5645494E53454C31L;
@@ -36,33 +38,12 @@ public class ConfigurableOreWorldGenerator implements IWorldGenerator {
     private final ModConfigManager configManager;
     private final VeinPlacer veinPlacer = new VeinPlacer();
 
-    /**
-     * 构造 ConfigurableOreWorldGenerator 实例。
-     *
-     * @param configManager 参数 configManager。
-    */
     public ConfigurableOreWorldGenerator(ModConfigManager configManager) {
         this.configManager = configManager;
     }
 
-    /**
-     * 执行矿脉世界生成逻辑。
-     *
-     * @param random 参数 random。
-     * @param chunkX 参数 chunkX。
-     * @param chunkZ 参数 chunkZ。
-     * @param world 参数 world。
-     * @param chunkGenerator 参数 chunkGenerator。
-     * @param chunkProvider 参数 chunkProvider。
-    */
     @Override
-    public void generate(
-            Random random,
-            int chunkX,
-            int chunkZ,
-            World world,
-            IChunkGenerator chunkGenerator,
-            IChunkProvider chunkProvider) {
+    public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
         configManager.reloadIfNeeded();
         int dimensionId = world.provider.getDimension();
         long worldSeed = world.getSeed();
@@ -123,14 +104,8 @@ public class ConfigurableOreWorldGenerator implements IWorldGenerator {
         }
     }
 
-    /**
-     * 执行 toStatRecords 逻辑。
-     *
-     * @param stats 参数 stats。
-     * @return 处理结果。
-    */
     private List<StatRecord> toStatRecords(List<VeinPlacer.BlockStat> stats) {
-        List<StatRecord> result = new ArrayList<StatRecord>(stats.size());
+        List<StatRecord> result = new ArrayList<>(stats.size());
         for (VeinPlacer.BlockStat stat : stats) {
             if (stat != null && stat.getCount() > 0) {
                 result.add(new StatRecord(stat.getPackedState(), stat.getCount()));
@@ -139,12 +114,6 @@ public class ConfigurableOreWorldGenerator implements IWorldGenerator {
         return result;
     }
 
-    /**
-     * 解析 LocatorIcon。
-     *
-     * @param definition 参数 definition。
-     * @return 处理结果。
-    */
     private int[] resolveLocatorIcon(VeinDefinition definition) {
         String blockName = definition.getLocatorIconBlock();
         int meta = definition.getLocatorIconMeta();
@@ -156,11 +125,6 @@ public class ConfigurableOreWorldGenerator implements IWorldGenerator {
         return new int[] {Block.getIdFromBlock(state.getBlock()), meta};
     }
 
-    /**
-     * 获取 SearchRadiusChunks。
-     *
-     * @return 处理结果。
-    */
     private int getSearchRadiusChunks() {
         int maxReachBlocks = 0;
         for (VeinDefinition vein : configManager.getVeins()) {
@@ -172,16 +136,6 @@ public class ConfigurableOreWorldGenerator implements IWorldGenerator {
         return Math.max(0, (int) Math.ceil(maxReachBlocks / 16.0D));
     }
 
-    /**
-     * 创建 VeinInstance。
-     *
-     * @param world 参数 world。
-     * @param worldSeed 参数 worldSeed。
-     * @param dimensionId 参数 dimensionId。
-     * @param anchorChunkX 参数 anchorChunkX。
-     * @param anchorChunkZ 参数 anchorChunkZ。
-     * @return 处理结果。
-    */
     private VeinPlacer.VeinInstance createVeinInstance(
             World world, long worldSeed, int dimensionId, int anchorChunkX, int anchorChunkZ) {
         if (!isVeinChunk(worldSeed, dimensionId, anchorChunkX, anchorChunkZ)) {
@@ -219,19 +173,9 @@ public class ConfigurableOreWorldGenerator implements IWorldGenerator {
         return veinPlacer.createInstance(selectedVein, seed, origin, anchorChunkX, anchorChunkZ);
     }
 
-    /**
-     * 选择 Vein。
-     *
-     * @param worldSeed 参数 worldSeed。
-     * @param dimensionId 参数 dimensionId。
-     * @param chunkX 参数 chunkX。
-     * @param chunkZ 参数 chunkZ。
-     * @param biomeId 参数 biomeId。
-     * @return 处理结果。
-    */
     private VeinDefinition selectVein(
             long worldSeed, int dimensionId, int chunkX, int chunkZ, String biomeId) {
-        List<VeinDefinition> eligible = new ArrayList<VeinDefinition>();
+        List<VeinDefinition> eligible = new ArrayList<>();
         for (VeinDefinition vein : configManager.getVeins()) {
             if (!vein.isEnabled() || !vein.matchesDimension(dimensionId) || !vein.matchesBiome(biomeId)) {
                 continue;
@@ -251,16 +195,6 @@ public class ConfigurableOreWorldGenerator implements IWorldGenerator {
         return eligible.get(selectionRandom.nextInt(eligible.size()));
     }
 
-    /**
-     * 执行 passesChunkChance 逻辑。
-     *
-     * @param worldSeed 参数 worldSeed。
-     * @param dimensionId 参数 dimensionId。
-     * @param chunkX 参数 chunkX。
-     * @param chunkZ 参数 chunkZ。
-     * @param vein 参数 vein。
-     * @return 处理结果。
-    */
     private boolean passesChunkChance(
             long worldSeed, int dimensionId, int chunkX, int chunkZ, VeinDefinition vein) {
         double chance = vein.getChunkChance();
@@ -284,15 +218,6 @@ public class ConfigurableOreWorldGenerator implements IWorldGenerator {
         return roll < chance;
     }
 
-    /**
-     * 判断 VeinChunk。
-     *
-     * @param worldSeed 参数 worldSeed。
-     * @param dimensionId 参数 dimensionId。
-     * @param chunkX 参数 chunkX。
-     * @param chunkZ 参数 chunkZ。
-     * @return 处理结果。
-    */
     private boolean isVeinChunk(long worldSeed, int dimensionId, int chunkX, int chunkZ) {
         long centerScore = chunkScore(worldSeed, dimensionId, chunkX, chunkZ);
         for (int offsetX = -MIN_VEIN_SPACING_CHUNKS; offsetX <= MIN_VEIN_SPACING_CHUNKS; offsetX++) {
@@ -318,15 +243,6 @@ public class ConfigurableOreWorldGenerator implements IWorldGenerator {
         return true;
     }
 
-    /**
-     * 比较 ChunkPosition。
-     *
-     * @param leftX 参数 leftX。
-     * @param leftZ 参数 leftZ。
-     * @param rightX 参数 rightX。
-     * @param rightZ 参数 rightZ。
-     * @return 处理结果。
-    */
     private int compareChunkPosition(int leftX, int leftZ, int rightX, int rightZ) {
         if (leftX != rightX) {
             return Integer.compare(leftX, rightX);
@@ -334,15 +250,6 @@ public class ConfigurableOreWorldGenerator implements IWorldGenerator {
         return Integer.compare(leftZ, rightZ);
     }
 
-    /**
-     * 执行 chunkScore 逻辑。
-     *
-     * @param worldSeed 参数 worldSeed。
-     * @param dimensionId 参数 dimensionId。
-     * @param chunkX 参数 chunkX。
-     * @param chunkZ 参数 chunkZ。
-     * @return 处理结果。
-    */
     private long chunkScore(long worldSeed, int dimensionId, int chunkX, int chunkZ) {
         long mixed =
                 mix(
@@ -354,16 +261,6 @@ public class ConfigurableOreWorldGenerator implements IWorldGenerator {
         return mixed & Long.MAX_VALUE;
     }
 
-    /**
-     * 创建 ChunkRandom。
-     *
-     * @param worldSeed 参数 worldSeed。
-     * @param dimensionId 参数 dimensionId。
-     * @param chunkX 参数 chunkX。
-     * @param chunkZ 参数 chunkZ。
-     * @param salt 参数 salt。
-     * @return 处理结果。
-    */
     private Random createChunkRandom(
             long worldSeed, int dimensionId, int chunkX, int chunkZ, long salt) {
         return new Random(
@@ -375,12 +272,6 @@ public class ConfigurableOreWorldGenerator implements IWorldGenerator {
                                 ^ salt));
     }
 
-    /**
-     * 执行 mix 逻辑。
-     *
-     * @param value 参数 value。
-     * @return 处理结果。
-    */
     private long mix(long value) {
         long mixed = value;
         mixed = (mixed ^ (mixed >>> 33)) * 0xff51afd7ed558ccdL;

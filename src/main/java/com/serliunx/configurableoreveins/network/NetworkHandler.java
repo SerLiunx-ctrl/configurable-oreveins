@@ -8,12 +8,12 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
 /**
- * 模组网络消息注册器。
+ * 模组网络消息注册器
  *
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
-*/
+ */
 public final class NetworkHandler {
 
     public static final SimpleNetworkWrapper CHANNEL = NetworkRegistry.INSTANCE.newSimpleChannel(ConfigurableOreVeinsMod.MOD_ID);
@@ -25,7 +25,9 @@ public final class NetworkHandler {
 
     private NetworkHandler() {}
 
-    /** 执行模组初始化逻辑。 */
+    /**
+     * 初始化, 注册网络消息及处理器
+     */
     public static void init() {
         CHANNEL.registerMessage(
                 SetLocatorTargetMessageHandler.class,

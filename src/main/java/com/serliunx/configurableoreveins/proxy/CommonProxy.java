@@ -3,14 +3,14 @@ package com.serliunx.configurableoreveins.proxy;
 import com.serliunx.configurableoreveins.network.message.OpenLocatorGuiMessage;
 
 /**
- * 通用代理基类。
+ * 通用代理基类.
  *
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
-*/
+ */
 public class CommonProxy {
-    /** 初始化客户端专用系统。 */
+
     public void initClientSystems() {}
 
     /**

@@ -8,7 +8,6 @@ import com.serliunx.configurableoreveins.network.NetworkHandler;
 import com.serliunx.configurableoreveins.proxy.CommonProxy;
 import com.serliunx.configurableoreveins.world.ConfigurableOreWorldGenerator;
 import com.serliunx.configurableoreveins.world.VanillaOreGenerationDisabler;
-import java.io.File;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.IWorldGenerator;
 import net.minecraftforge.fml.common.Mod;
@@ -18,26 +17,32 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
+import java.io.File;
+
 /**
  * 主类
  *
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
-*/
+ */
 @Mod(
         modid = ConfigurableOreVeinsMod.MOD_ID,
         name = ConfigurableOreVeinsMod.MOD_NAME,
         version = ConfigurableOreVeinsMod.VERSION,
-        acceptableRemoteVersions = "*")
+        acceptableRemoteVersions = "*"
+)
+@SuppressWarnings("unused")
 public class ConfigurableOreVeinsMod {
+
     public static final String MOD_ID = "configurableoreveins";
     public static final String MOD_NAME = "Configurable Ore Veins";
     public static final String VERSION = "0.0.1";
 
     @SidedProxy(
             clientSide = "com.serliunx.configurableoreveins.proxy.ClientProxy",
-            serverSide = "com.serliunx.configurableoreveins.proxy.CommonProxy")
+            serverSide = "com.serliunx.configurableoreveins.proxy.CommonProxy"
+    )
     public static CommonProxy proxy;
 
     private static ModConfigManager configManager;

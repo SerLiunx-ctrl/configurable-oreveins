@@ -2,10 +2,10 @@ package com.serliunx.configurableoreveins.network.handler;
 
 import com.serliunx.configurableoreveins.config.GeneralConfig;
 import com.serliunx.configurableoreveins.item.VeinLocatorItem;
-import com.serliunx.configurableoreveins.vein.LocatorVeinInfo;
 import com.serliunx.configurableoreveins.network.NetworkHandler;
 import com.serliunx.configurableoreveins.network.message.RequestNearbyVeinsMessage;
 import com.serliunx.configurableoreveins.network.message.SyncNearbyVeinsMessage;
+import com.serliunx.configurableoreveins.vein.LocatorVeinInfo;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;

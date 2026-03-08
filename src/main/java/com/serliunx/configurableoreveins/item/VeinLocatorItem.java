@@ -1,6 +1,5 @@
 package com.serliunx.configurableoreveins.item;
 
-import com.serliunx.configurableoreveins.util.BlockStateResolver;
 import com.serliunx.configurableoreveins.ConfigurableOreVeinsMod;
 import com.serliunx.configurableoreveins.config.GeneralConfig;
 import com.serliunx.configurableoreveins.config.ModConfigManager;
@@ -9,15 +8,10 @@ import com.serliunx.configurableoreveins.data.PlayerVeinStatusData;
 import com.serliunx.configurableoreveins.data.VeinWorldData;
 import com.serliunx.configurableoreveins.data.VeinWorldData.StatRecord;
 import com.serliunx.configurableoreveins.data.VeinWorldData.VeinRecord;
-import com.serliunx.configurableoreveins.vein.LocatorVeinInfo;
 import com.serliunx.configurableoreveins.network.NetworkHandler;
 import com.serliunx.configurableoreveins.network.message.OpenLocatorGuiMessage;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Nullable;
+import com.serliunx.configurableoreveins.util.BlockStateResolver;
+import com.serliunx.configurableoreveins.vein.LocatorVeinInfo;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItemFrame;
@@ -35,6 +29,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.*;
+
 /**
  * 矿脉定位仪器物品实现。
  *
@@ -43,6 +41,7 @@ import net.minecraft.world.World;
  * @since 2026/3/7
 */
 public class VeinLocatorItem extends Item {
+
     private static final String TARGET_TAG = "VeinTarget";
     private static final String AUTO_TARGET_TAG = "AutoVeinTarget";
     private static final String TARGET_DIMENSION_TAG = "Dimension";
@@ -53,7 +52,6 @@ public class VeinLocatorItem extends Item {
     private static final String TARGET_COLOR_TAG = "HighlightColor";
     private static final int AUTO_TARGET_REFRESH_INTERVAL = 10;
 
-    /** 构造 VeinLocatorItem 实例。 */
     public VeinLocatorItem() {
         addPropertyOverride(
                 new ResourceLocation("angle"),
@@ -63,18 +61,22 @@ public class VeinLocatorItem extends Item {
                     private long lastUpdateTick;
 
                     @Override
-                    public float apply(
-                            ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn) {
+                    public float apply(@Nonnull ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn) {
                         if (entityIn == null && !stack.isOnItemFrame()) {
                             return 0.0F;
                         }
                         Entity entity = entityIn != null ? entityIn : stack.getItemFrame();
+                        if (entity == null) {
+                            return 0.0F;
+                        }
+
                         World world = worldIn != null ? worldIn : entity.world;
                         TargetInfo target = getManualTarget(stack);
                         if (target == null) {
                             target = getAutomaticTarget(stack);
                         }
-                        if (target == null || target.dimensionId != world.provider.getDimension()) {
+                        if (target == null ||
+                                target.dimensionId != world.provider.getDimension()) {
                             return 0.0F;
                         }
 
@@ -114,19 +116,10 @@ public class VeinLocatorItem extends Item {
                 });
     }
 
-    /**
-     * 刷新定位器的自动目标。
-     *
-     * @param stack 参数 stack。
-     * @param world 参数 world。
-     * @param entity 参数 entity。
-     * @param itemSlot 参数 itemSlot。
-     * @param isSelected 参数 isSelected。
-    */
     @Override
-    public void onUpdate(
-            ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
-        if (world.isRemote || !(entity instanceof EntityPlayer)) {
+    public void onUpdate(@Nonnull ItemStack stack, World world, @Nonnull Entity entity, int itemSlot, boolean isSelected) {
+        if (world.isRemote ||
+                !(entity instanceof EntityPlayer)) {
             return;
         }
         EntityPlayer player = (EntityPlayer) entity;
@@ -144,50 +137,45 @@ public class VeinLocatorItem extends Item {
         }
     }
 
-    /**
-     * 处理定位器右键行为。
-     *
-     * @param world 参数 world。
-     * @param player 参数 player。
-     * @param hand 参数 hand。
-     * @return 处理结果。
-    */
+    @Nonnull
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, @Nonnull EnumHand hand) {
         ItemStack stack = player.getHeldItem(hand);
         if (world.isRemote) {
-            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+            return new ActionResult<>(EnumActionResult.SUCCESS, stack);
         }
+
         refreshAutomaticTarget(stack, world, player);
         int rangeChunks = Math.max(1, GeneralConfig.locatorRangeChunks);
         int maxResults = Math.max(1, GeneralConfig.locatorMaxResults);
         java.util.ArrayList<LocatorVeinInfo> payload =
-                new java.util.ArrayList<LocatorVeinInfo>(
+                new java.util.ArrayList<>(
                         createNearbyVeinInfos(world, player, rangeChunks, maxResults));
         if (payload.isEmpty()) {
             clearTarget(stack);
             NetworkHandler.CHANNEL.sendTo(
                     new OpenLocatorGuiMessage(hand.ordinal(), rangeChunks, payload), (EntityPlayerMP) player);
-            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+            return new ActionResult<>(EnumActionResult.SUCCESS, stack);
         }
 
         NetworkHandler.CHANNEL.sendTo(
                 new OpenLocatorGuiMessage(hand.ordinal(), rangeChunks, payload), (EntityPlayerMP) player);
 
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+        return new ActionResult<>(EnumActionResult.SUCCESS, stack);
     }
 
     /**
-     * 构建附近矿脉信息列表。
+     * 构建附近矿脉信息列表.
      *
-     * @param world 参数 world。
-     * @param player 参数 player。
-     * @param rangeChunks 参数 rangeChunks。
-     * @param maxResults 参数 maxResults。
-     * @return 处理结果。
-    */
-    public static List<LocatorVeinInfo> createNearbyVeinInfos(
-            World world, EntityPlayer player, int rangeChunks, int maxResults) {
+     * @param world 所处世界
+     * @param player 玩家
+     * @param rangeChunks 区块范围
+     * @param maxResults 最大结果数量
+     * @return 矿脉信息列表
+     */
+    public static List<LocatorVeinInfo> createNearbyVeinInfos(World world, EntityPlayer player,
+                                                              int rangeChunks, int maxResults) {
+
         VeinWorldData worldData = VeinWorldData.get(world);
         PlayerVeinStatusData statusData = PlayerVeinStatusData.get(world);
         BlockPos playerPos = player.getPosition();
@@ -203,19 +191,12 @@ public class VeinLocatorItem extends Item {
         final double playerX = player.posX;
         final double playerY = player.posY;
         final double playerZ = player.posZ;
-        Collections.sort(
-                results,
-                new Comparator<VeinRecord>() {
-                    @Override
-                    public int compare(VeinRecord left, VeinRecord right) {
-                        return Double.compare(
-                                distanceSq(left, playerX, playerY, playerZ),
-                                distanceSq(right, playerX, playerY, playerZ));
-                    }
-                });
+
+        results.sort(Comparator.comparingDouble(left -> distanceSq(left, playerX, playerY, playerZ)));
+
         Map<Integer, VeinDescriptor> namesByHash = buildVeinNameIndex();
         int shown = Math.min(Math.max(0, maxResults), results.size());
-        java.util.ArrayList<LocatorVeinInfo> payload = new java.util.ArrayList<LocatorVeinInfo>(shown);
+        java.util.ArrayList<LocatorVeinInfo> payload = new java.util.ArrayList<>(shown);
         for (int index = 0; index < results.size() && payload.size() < shown; index++) {
             VeinRecord record = results.get(index);
             boolean mined =
@@ -229,14 +210,9 @@ public class VeinLocatorItem extends Item {
         return payload;
     }
 
-    /**
-     * 构建 VeinNameIndex。
-     *
-     * @return 处理结果。
-    */
     private static Map<Integer, VeinDescriptor> buildVeinNameIndex() {
         ModConfigManager configManager = ConfigurableOreVeinsMod.getConfigManager();
-        Map<Integer, VeinDescriptor> namesByHash = new HashMap<Integer, VeinDescriptor>();
+        Map<Integer, VeinDescriptor> namesByHash = new HashMap<>();
         if (configManager == null) {
             return namesByHash;
         }
@@ -260,17 +236,8 @@ public class VeinLocatorItem extends Item {
 
         return namesByHash;
     }
-
-    /**
-     * 构建单条定位矿脉信息。
-     *
-     * @param dimensionId 参数 dimensionId。
-     * @param record 参数 record。
-     * @param namesByHash 参数 namesByHash。
-     * @return 处理结果。
-    */
-    private static LocatorVeinInfo createLocatorVeinInfo(
-            int dimensionId, VeinRecord record, Map<Integer, VeinDescriptor> namesByHash, boolean mined) {
+    private static LocatorVeinInfo createLocatorVeinInfo(int dimensionId, VeinRecord record,
+                                                         Map<Integer, VeinDescriptor> namesByHash, boolean mined) {
         VeinDescriptor descriptor =
                 namesByHash.containsKey(record.getVeinHash())
                         ? namesByHash.get(record.getVeinHash())
@@ -294,15 +261,6 @@ public class VeinLocatorItem extends Item {
                 toCountArray(record.getStats()));
     }
 
-    /**
-     * 执行 distanceSq 逻辑。
-     *
-     * @param record 参数 record。
-     * @param playerX 参数 playerX。
-     * @param playerY 参数 playerY。
-     * @param playerZ 参数 playerZ。
-     * @return 处理结果。
-    */
     private static double distanceSq(
             VeinRecord record, double playerX, double playerY, double playerZ) {
         double dx = record.getCenterX() - playerX;
@@ -311,14 +269,6 @@ public class VeinLocatorItem extends Item {
         return (dx * dx) + (dy * dy) + (dz * dz);
     }
 
-    /**
-     * 查找最近的未标记矿脉。
-     *
-     * @param world 参数 world。
-     * @param player 参数 player。
-     * @param rangeChunks 参数 rangeChunks。
-     * @return 处理结果。
-    */
     @Nullable
     private static VeinRecord findNearestUnminedVein(World world, EntityPlayer player, int rangeChunks) {
         VeinWorldData worldData = VeinWorldData.get(world);
@@ -347,67 +297,39 @@ public class VeinLocatorItem extends Item {
     }
 
     /**
-     * 设置定位器目标。
-     *
-     * @param stack 参数 stack。
-     * @param dimensionId 参数 dimensionId。
-     * @param x 参数 x。
-     * @param y 参数 y。
-     * @param z 参数 z。
-     * @param veinName 参数 veinName。
-    */
+     * 设置定位器目标
+     */
     public static void setTarget(
             ItemStack stack, int dimensionId, int x, int y, int z, String veinName) {
         setTarget(stack, dimensionId, x, y, z, veinName, 0xB2FF8C);
     }
 
     /**
-     * 设置定位器目标。
-     *
-     * @param stack 参数 stack。
-     * @param dimensionId 参数 dimensionId。
-     * @param x 参数 x。
-     * @param y 参数 y。
-     * @param z 参数 z。
-     * @param veinName 参数 veinName。
-     * @param highlightColor 参数 highlightColor。
-    */
+     * 设置定位器目标
+     */
     public static void setTarget(
             ItemStack stack, int dimensionId, int x, int y, int z, String veinName, int highlightColor) {
         setTargetTag(stack, TARGET_TAG, dimensionId, x, y, z, veinName, highlightColor);
     }
 
     /**
-     * 清除定位器目标。
-     *
-     * @param stack 参数 stack。
-    */
+     * 清除定位器目标
+     */
     public static void clearTarget(ItemStack stack) {
         clearTargetTag(stack, TARGET_TAG);
     }
 
     /**
-     * 按坐标匹配后清除手动定位目标。
-     *
-     * @param stack 参数 stack。
-     * @param dimensionId 参数 dimensionId。
-     * @param x 参数 x。
-     * @param y 参数 y。
-     * @param z 参数 z。
-     * @return 处理结果。
-    */
+     * 按坐标匹配后清除手动定位目标
+     */
+    @SuppressWarnings("all")
     public static boolean clearTargetIfMatches(ItemStack stack, int dimensionId, int x, int y, int z) {
         return clearTargetTagIfMatches(stack, TARGET_TAG, dimensionId, x, y, z);
     }
 
     /**
-     * 刷新定位器自动目标。
-     *
-     * @param stack 参数 stack。
-     * @param world 参数 world。
-     * @param player 参数 player。
-     * @return 处理结果。
-    */
+     * 刷新定位器自动目标
+     */
     public static boolean refreshAutomaticTarget(ItemStack stack, World world, EntityPlayer player) {
         if (hasTargetTag(stack, TARGET_TAG)) {
             return false;
@@ -429,36 +351,20 @@ public class VeinLocatorItem extends Item {
     }
 
     /**
-     * 清除定位器自动目标。
-     *
-     * @param stack 参数 stack。
-     * @return 处理结果。
-    */
+     * 清除定位器自动目标
+     */
     public static boolean clearAutomaticTarget(ItemStack stack) {
         return clearTargetTag(stack, AUTO_TARGET_TAG);
     }
 
     /**
-     * 按坐标匹配后清除自动定位目标。
-     *
-     * @param stack 参数 stack。
-     * @param dimensionId 参数 dimensionId。
-     * @param x 参数 x。
-     * @param y 参数 y。
-     * @param z 参数 z。
-     * @return 处理结果。
-    */
+     * 按坐标匹配后清除自动定位目标
+     */
+    @SuppressWarnings("all")
     public static boolean clearAutomaticTargetIfMatches(ItemStack stack, int dimensionId, int x, int y, int z) {
         return clearTargetTagIfMatches(stack, AUTO_TARGET_TAG, dimensionId, x, y, z);
     }
 
-    /**
-     * 执行 clearTargetTag 逻辑。
-     *
-     * @param stack 参数 stack。
-     * @param targetTagName 参数 targetTagName。
-     * @return 处理结果。
-    */
     private static boolean clearTargetTag(ItemStack stack, String targetTagName) {
         NBTTagCompound root = stack.getTagCompound();
         if (root != null) {
@@ -476,16 +382,8 @@ public class VeinLocatorItem extends Item {
     }
 
     /**
-     * 按坐标匹配后清除目标标签。
-     *
-     * @param stack 参数 stack。
-     * @param targetTagName 参数 targetTagName。
-     * @param dimensionId 参数 dimensionId。
-     * @param x 参数 x。
-     * @param y 参数 y。
-     * @param z 参数 z。
-     * @return 处理结果。
-    */
+     * 按坐标匹配后清除目标标签
+     */
     private static boolean clearTargetTagIfMatches(
             ItemStack stack, String targetTagName, int dimensionId, int x, int y, int z) {
         NBTTagCompound root = stack.getTagCompound();
@@ -502,35 +400,16 @@ public class VeinLocatorItem extends Item {
         return clearTargetTag(stack, targetTagName);
     }
 
-    /**
-     * 获取 ManualTarget。
-     *
-     * @param stack 参数 stack。
-     * @return 处理结果。
-    */
     @Nullable
     private static TargetInfo getManualTarget(ItemStack stack) {
         return getTarget(stack, TARGET_TAG);
     }
 
-    /**
-     * 获取 AutomaticTarget。
-     *
-     * @param stack 参数 stack。
-     * @return 处理结果。
-    */
     @Nullable
     private static TargetInfo getAutomaticTarget(ItemStack stack) {
         return getTarget(stack, AUTO_TARGET_TAG);
     }
 
-    /**
-     * 获取 Target。
-     *
-     * @param stack 参数 stack。
-     * @param targetTagName 参数 targetTagName。
-     * @return 处理结果。
-    */
     @Nullable
     private static TargetInfo getTarget(ItemStack stack, String targetTagName) {
         NBTTagCompound root = stack.getTagCompound();
@@ -545,22 +424,13 @@ public class VeinLocatorItem extends Item {
                 targetTag.getInteger(TARGET_Z_TAG));
     }
 
-    /**
-     * 获取 FrameRotation。
-     *
-     * @param frame 参数 frame。
-     * @return 处理结果。
-    */
     private static double getFrameRotation(EntityItemFrame frame) {
+        if (frame.facingDirection == null) {
+            return 1.0;
+        }
         return MathHelper.wrapDegrees(180 + (frame.facingDirection.getHorizontalIndex() * 90));
     }
 
-    /**
-     * 执行 toPackedStateArray 逻辑。
-     *
-     * @param stats 参数 stats。
-     * @return 处理结果。
-    */
     private static int[] toPackedStateArray(List<StatRecord> stats) {
         int[] values = new int[stats.size()];
         for (int index = 0; index < stats.size(); index++) {
@@ -569,12 +439,6 @@ public class VeinLocatorItem extends Item {
         return values;
     }
 
-    /**
-     * 执行 toCountArray 逻辑。
-     *
-     * @param stats 参数 stats。
-     * @return 处理结果。
-    */
     private static int[] toCountArray(List<StatRecord> stats) {
         int[] values = new int[stats.size()];
         for (int index = 0; index < stats.size(); index++) {
@@ -583,31 +447,12 @@ public class VeinLocatorItem extends Item {
         return values;
     }
 
-    /**
-     * 判断是否包含 TargetTag。
-     *
-     * @param stack 参数 stack。
-     * @param targetTagName 参数 targetTagName。
-     * @return 处理结果。
-    */
+    @SuppressWarnings("all")
     private static boolean hasTargetTag(ItemStack stack, String targetTagName) {
         NBTTagCompound root = stack.getTagCompound();
         return root != null && root.hasKey(targetTagName);
     }
 
-    /**
-     * 设置 TargetTag。
-     *
-     * @param stack 参数 stack。
-     * @param targetTagName 参数 targetTagName。
-     * @param dimensionId 参数 dimensionId。
-     * @param x 参数 x。
-     * @param y 参数 y。
-     * @param z 参数 z。
-     * @param veinName 参数 veinName。
-     * @param highlightColor 参数 highlightColor。
-     * @return 处理结果。
-    */
     private static boolean setTargetTag(
             ItemStack stack,
             String targetTagName,
@@ -645,12 +490,6 @@ public class VeinLocatorItem extends Item {
         return true;
     }
 
-    /**
-     * 解析 Descriptor。
-     *
-     * @param veinHash 参数 veinHash。
-     * @return 处理结果。
-    */
     private static VeinDescriptor resolveDescriptor(int veinHash) {
         ModConfigManager configManager = ConfigurableOreVeinsMod.getConfigManager();
         if (configManager != null) {
@@ -676,26 +515,15 @@ public class VeinLocatorItem extends Item {
     }
 
     /**
-     * 定位目标的 NBT 简化数据。
-     *
-     * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
-     * @version 0.0.1
-     * @since 2026/3/7
-    */
+     * 定位目标的 NBT 简化数据
+     */
     private static class TargetInfo {
+
         private final int dimensionId;
         private final int x;
         private final int y;
         private final int z;
 
-        /**
-         * 构造 TargetInfo 实例。
-         *
-         * @param dimensionId 参数 dimensionId。
-         * @param x 参数 x。
-         * @param y 参数 y。
-         * @param z 参数 z。
-        */
         private TargetInfo(int dimensionId, int x, int y, int z) {
             this.dimensionId = dimensionId;
             this.x = x;
@@ -705,26 +533,15 @@ public class VeinLocatorItem extends Item {
     }
 
     /**
-     * 定位显示描述数据。
-     *
-     * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
-     * @version 0.0.1
-     * @since 2026/3/7
-    */
+     * 定位显示描述数据
+     */
     private static class VeinDescriptor {
+
         private final String displayName;
         private final int highlightColor;
         private final int iconBlockId;
         private final int iconMeta;
 
-        /**
-         * 构造 VeinDescriptor 实例。
-         *
-         * @param displayName 参数 displayName。
-         * @param highlightColor 参数 highlightColor。
-         * @param iconBlockId 参数 iconBlockId。
-         * @param iconMeta 参数 iconMeta。
-        */
         private VeinDescriptor(String displayName, int highlightColor, int iconBlockId, int iconMeta) {
             this.displayName = displayName;
             this.highlightColor = highlightColor;
@@ -732,38 +549,18 @@ public class VeinLocatorItem extends Item {
             this.iconMeta = iconMeta;
         }
 
-        /**
-         * 获取 DisplayName。
-         *
-         * @return 处理结果。
-        */
         private String getDisplayName() {
             return displayName;
         }
 
-        /**
-         * 获取 HighlightColor。
-         *
-         * @return 处理结果。
-        */
         private int getHighlightColor() {
             return highlightColor;
         }
 
-        /**
-         * 获取 IconBlockId。
-         *
-         * @return 处理结果。
-        */
         private int getIconBlockId() {
             return iconBlockId;
         }
 
-        /**
-         * 获取 IconMeta。
-         *
-         * @return 处理结果。
-        */
         private int getIconMeta() {
             return iconMeta;
         }

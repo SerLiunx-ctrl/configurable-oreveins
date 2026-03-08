@@ -14,7 +14,7 @@ import net.minecraft.entity.player.EntityPlayer;
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
-*/
+ */
 public final class ClientNearbyVeinCache {
 
     private static int dimensionId = Integer.MIN_VALUE;

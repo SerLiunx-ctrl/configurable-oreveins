@@ -20,8 +20,9 @@ import java.util.List;
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
-*/
+ */
 @JEIPlugin
+@SuppressWarnings("unused")
 public class ConfigurableOreVeinsJeiPlugin implements IModPlugin {
 
     @Override

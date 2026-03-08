@@ -1,27 +1,25 @@
 package com.serliunx.configurableoreveins.data;
 
 import com.serliunx.configurableoreveins.ConfigurableOreVeinsMod;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.*;
+
 /**
- * 矿脉世界存档数据。
+ * 矿脉世界存档数据
  *
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
-*/
+ */
 public class VeinWorldData extends WorldSavedData {
+
     private static final String DATA_NAME = ConfigurableOreVeinsMod.MOD_ID + "_veins";
     private static final String DIMENSIONS_TAG = "dimensions";
     private static final String DIMENSION_ID_TAG = "id";
@@ -35,29 +33,19 @@ public class VeinWorldData extends WorldSavedData {
     private static final String ORE_COUNTS_TAG = "oreCounts";
     private static final int MAX_STORED_STATS = 4;
 
-    private final Map<Integer, Map<Long, VeinRecord>> recordsByDimension =
-            new HashMap<Integer, Map<Long, VeinRecord>>();
+    private final Map<Integer, Map<Long, VeinRecord>> recordsByDimension = new HashMap<>();
 
-    /** 构造 VeinWorldData 实例。 */
     public VeinWorldData() {
         super(DATA_NAME);
     }
 
-    /**
-     * 构造 VeinWorldData 实例。
-     *
-     * @param name 参数 name。
-    */
     public VeinWorldData(String name) {
         super(name);
     }
 
     /**
-     * 获取世界矿脉存档对象。
-     *
-     * @param world 参数 world。
-     * @return 处理结果。
-    */
+     * 获取指定世界的矿脉存档信息
+     */
     public static VeinWorldData get(World world) {
         MapStorage storage = world.getPerWorldStorage();
         VeinWorldData data = (VeinWorldData) storage.getOrLoadData(VeinWorldData.class, DATA_NAME);
@@ -70,20 +58,8 @@ public class VeinWorldData extends WorldSavedData {
     }
 
     /**
-     * 记录已生成矿脉的存档信息。
-     *
-     * @param dimensionId 参数 dimensionId。
-     * @param chunkX 参数 chunkX。
-     * @param chunkZ 参数 chunkZ。
-     * @param centerX 参数 centerX。
-     * @param centerY 参数 centerY。
-     * @param centerZ 参数 centerZ。
-     * @param veinHash 参数 veinHash。
-     * @param iconBlockId 参数 iconBlockId。
-     * @param iconMeta 参数 iconMeta。
-     * @param totalBlocks 参数 totalBlocks。
-     * @param stats 参数 stats。
-    */
+     * 记录已生成矿脉的存档信息
+     */
     public void recordGeneratedVein(
             int dimensionId,
             int chunkX,
@@ -120,14 +96,8 @@ public class VeinWorldData extends WorldSavedData {
     }
 
     /**
-     * 查找附近已记录矿脉。
-     *
-     * @param dimensionId 参数 dimensionId。
-     * @param centerChunkX 参数 centerChunkX。
-     * @param centerChunkZ 参数 centerChunkZ。
-     * @param rangeChunks 参数 rangeChunks。
-     * @return 处理结果。
-    */
+     * 查找附近已记录矿脉
+     */
     public List<VeinRecord> findNearby(
             int dimensionId, int centerChunkX, int centerChunkZ, int rangeChunks) {
         Map<Long, VeinRecord> dimensionRecords = recordsByDimension.get(dimensionId);
@@ -135,7 +105,7 @@ public class VeinWorldData extends WorldSavedData {
             return Collections.emptyList();
         }
 
-        List<VeinRecord> results = new ArrayList<VeinRecord>();
+        List<VeinRecord> results = new ArrayList<>();
         for (int chunkX = centerChunkX - rangeChunks; chunkX <= centerChunkX + rangeChunks; chunkX++) {
             for (int chunkZ = centerChunkZ - rangeChunks;
                     chunkZ <= centerChunkZ + rangeChunks;
@@ -151,16 +121,8 @@ public class VeinWorldData extends WorldSavedData {
     }
 
     /**
-     * 查找最近的已记录矿脉。
-     *
-     * @param dimensionId 参数 dimensionId。
-     * @param centerChunkX 参数 centerChunkX。
-     * @param centerChunkZ 参数 centerChunkZ。
-     * @param rangeChunks 参数 rangeChunks。
-     * @param playerX 参数 playerX。
-     * @param playerZ 参数 playerZ。
-     * @return 处理结果。
-    */
+     * 查找最近的已记录矿脉
+     */
     @Nullable
     public VeinRecord findNearest(
             int dimensionId,
@@ -185,15 +147,11 @@ public class VeinWorldData extends WorldSavedData {
         return nearest;
     }
 
-    /**
-     * 从 NBT 读取矿脉存档数据。
-     *
-     * @param nbt 参数 nbt。
-    */
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
         recordsByDimension.clear();
         int[] dimensionIds = nbt.getIntArray(DIMENSIONS_TAG);
+
         for (int dimensionId : dimensionIds) {
             NBTTagCompound dimensionTag = nbt.getCompoundTag(String.valueOf(dimensionId));
             int[] chunkXs = dimensionTag.getIntArray(CHUNK_X_TAG);
@@ -204,10 +162,10 @@ public class VeinWorldData extends WorldSavedData {
             int[] totalBlocks = dimensionTag.getIntArray(TOTAL_BLOCKS_TAG);
             int[] oreStateKeys = dimensionTag.getIntArray(ORE_STATE_KEYS_TAG);
             int[] oreCounts = dimensionTag.getIntArray(ORE_COUNTS_TAG);
-            int count =
-                    Math.min(
-                            Math.min(chunkXs.length, chunkZs.length), Math.min(metas.length, veinHashes.length));
+
+            int count = Math.min(Math.min(chunkXs.length, chunkZs.length), Math.min(metas.length, veinHashes.length));
             Map<Long, VeinRecord> dimensionRecords = getDimensionRecords(dimensionId);
+
             for (int index = 0; index < count; index++) {
                 int iconState = index < iconStates.length ? iconStates[index] : 0;
                 int placed = index < totalBlocks.length ? totalBlocks[index] : 0;
@@ -225,16 +183,12 @@ public class VeinWorldData extends WorldSavedData {
         }
     }
 
-    /**
-     * 将矿脉存档数据写入 NBT。
-     *
-     * @param compound 参数 compound。
-     * @return 处理结果。
-    */
+    @Nonnull
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+    public NBTTagCompound writeToNBT(@Nonnull NBTTagCompound compound) {
         int[] dimensionIds = new int[recordsByDimension.size()];
         int dimensionIndex = 0;
+
         for (Map.Entry<Integer, Map<Long, VeinRecord>> entry : recordsByDimension.entrySet()) {
             int dimensionId = entry.getKey();
             dimensionIds[dimensionIndex++] = dimensionId;
@@ -277,41 +231,16 @@ public class VeinWorldData extends WorldSavedData {
         return compound;
     }
 
-    /**
-     * 获取 DimensionRecords。
-     *
-     * @param dimensionId 参数 dimensionId。
-     * @return 处理结果。
-    */
     private Map<Long, VeinRecord> getDimensionRecords(int dimensionId) {
-        Map<Long, VeinRecord> dimensionRecords = recordsByDimension.get(dimensionId);
-        if (dimensionRecords == null) {
-            dimensionRecords = new HashMap<Long, VeinRecord>();
-            recordsByDimension.put(dimensionId, dimensionRecords);
-        }
-
-        return dimensionRecords;
+        return recordsByDimension.computeIfAbsent(dimensionId, k -> new HashMap<>());
     }
 
-    /**
-     * 打包 ChunkKey。
-     *
-     * @param chunkX 参数 chunkX。
-     * @param chunkZ 参数 chunkZ。
-     * @return 处理结果。
-    */
     private static long packChunkKey(int chunkX, int chunkZ) {
         return ((long) chunkX << 32) ^ (chunkZ & 0xffffffffL);
     }
 
-    /**
-     * 执行 normalizeStats 逻辑。
-     *
-     * @param stats 参数 stats。
-     * @return 处理结果。
-    */
     private static List<StatRecord> normalizeStats(@Nullable List<StatRecord> stats) {
-        List<StatRecord> normalized = new ArrayList<StatRecord>(MAX_STORED_STATS);
+        List<StatRecord> normalized = new ArrayList<>(MAX_STORED_STATS);
         if (stats == null) {
             return normalized;
         }
@@ -326,17 +255,9 @@ public class VeinWorldData extends WorldSavedData {
         return normalized;
     }
 
-    /**
-     * 执行 extractStats 逻辑。
-     *
-     * @param oreStateKeys 参数 oreStateKeys。
-     * @param oreCounts 参数 oreCounts。
-     * @param recordIndex 参数 recordIndex。
-     * @return 处理结果。
-    */
     private static List<StatRecord> extractStats(
             int[] oreStateKeys, int[] oreCounts, int recordIndex) {
-        List<StatRecord> stats = new ArrayList<StatRecord>(MAX_STORED_STATS);
+        List<StatRecord> stats = new ArrayList<>(MAX_STORED_STATS);
         int base = recordIndex * MAX_STORED_STATS;
         for (int offset = 0; offset < MAX_STORED_STATS; offset++) {
             int index = base + offset;
@@ -354,14 +275,6 @@ public class VeinWorldData extends WorldSavedData {
         return stats;
     }
 
-    /**
-     * 写入 Stats。
-     *
-     * @param oreStateKeys 参数 oreStateKeys。
-     * @param oreCounts 参数 oreCounts。
-     * @param recordIndex 参数 recordIndex。
-     * @param stats 参数 stats。
-    */
     private static void writeStats(
             int[] oreStateKeys, int[] oreCounts, int recordIndex, List<StatRecord> stats) {
         int base = recordIndex * MAX_STORED_STATS;
@@ -374,13 +287,10 @@ public class VeinWorldData extends WorldSavedData {
     }
 
     /**
-     * 单条矿脉的紧凑存档记录。
-     *
-     * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
-     * @version 0.0.1
-     * @since 2026/3/7
-    */
+     * 单条矿脉的紧凑存档记录
+     */
     public static class VeinRecord {
+
         private final int chunkX;
         private final int chunkZ;
         private final int localX;
@@ -392,20 +302,6 @@ public class VeinWorldData extends WorldSavedData {
         private final int totalBlocks;
         private final List<StatRecord> stats;
 
-        /**
-         * 构造 VeinRecord 实例。
-         *
-         * @param chunkX 参数 chunkX。
-         * @param chunkZ 参数 chunkZ。
-         * @param localX 参数 localX。
-         * @param centerY 参数 centerY。
-         * @param localZ 参数 localZ。
-         * @param veinHash 参数 veinHash。
-         * @param iconBlockId 参数 iconBlockId。
-         * @param iconMeta 参数 iconMeta。
-         * @param totalBlocks 参数 totalBlocks。
-         * @param stats 参数 stats。
-        */
         public VeinRecord(
                 int chunkX,
                 int chunkZ,
@@ -429,126 +325,54 @@ public class VeinWorldData extends WorldSavedData {
             this.stats = normalizeStats(stats);
         }
 
-        /**
-         * 获取 ChunkX。
-         *
-         * @return 处理结果。
-        */
         public int getChunkX() {
             return chunkX;
         }
 
-        /**
-         * 获取 ChunkZ。
-         *
-         * @return 处理结果。
-        */
         public int getChunkZ() {
             return chunkZ;
         }
 
-        /**
-         * 获取 CenterX。
-         *
-         * @return 处理结果。
-        */
         public int getCenterX() {
             return (chunkX << 4) + localX;
         }
 
-        /**
-         * 获取 CenterY。
-         *
-         * @return 处理结果。
-        */
         public int getCenterY() {
             return centerY;
         }
 
-        /**
-         * 获取 CenterZ。
-         *
-         * @return 处理结果。
-        */
         public int getCenterZ() {
             return (chunkZ << 4) + localZ;
         }
 
-        /**
-         * 获取 VeinHash。
-         *
-         * @return 处理结果。
-        */
         public int getVeinHash() {
             return veinHash;
         }
 
-        /**
-         * 获取 IconBlockId。
-         *
-         * @return 处理结果。
-        */
         public int getIconBlockId() {
             return iconBlockId;
         }
 
-        /**
-         * 获取 IconMeta。
-         *
-         * @return 处理结果。
-        */
         public int getIconMeta() {
             return iconMeta;
         }
 
-        /**
-         * 获取 TotalBlocks。
-         *
-         * @return 处理结果。
-        */
         public int getTotalBlocks() {
             return totalBlocks;
         }
 
-        /**
-         * 获取 Stats。
-         *
-         * @return 处理结果。
-        */
         public List<StatRecord> getStats() {
             return stats;
         }
 
-        /**
-         * 打包 Meta。
-         *
-         * @return 处理结果。
-        */
         public int packMeta() {
             return ((localX & 15) << 12) | ((localZ & 15) << 8) | (centerY & 255);
         }
 
-        /**
-         * 打包 IconState。
-         *
-         * @return 处理结果。
-        */
         public int packIconState() {
             return (iconBlockId << 4) | (iconMeta & 15);
         }
 
-        /**
-         * 执行 fromPacked 逻辑。
-         *
-         * @param chunkX 参数 chunkX。
-         * @param chunkZ 参数 chunkZ。
-         * @param packedMeta 参数 packedMeta。
-         * @param veinHash 参数 veinHash。
-         * @param packedIconState 参数 packedIconState。
-         * @param totalBlocks 参数 totalBlocks。
-         * @param stats 参数 stats。
-         * @return 处理结果。
-        */
         public static VeinRecord fromPacked(
                 int chunkX,
                 int chunkZ,
@@ -575,12 +399,6 @@ public class VeinWorldData extends WorldSavedData {
                     stats);
         }
 
-        /**
-         * 执行 equals 逻辑。
-         *
-         * @param other 参数 other。
-         * @return 处理结果。
-        */
         @Override
         public boolean equals(@Nullable Object other) {
             if (this == other) {
@@ -603,11 +421,6 @@ public class VeinWorldData extends WorldSavedData {
                     && stats.equals(record.stats);
         }
 
-        /**
-         * 判断是否包含 hCode。
-         *
-         * @return 处理结果。
-        */
         @Override
         public int hashCode() {
             int result = chunkX;
@@ -623,65 +436,32 @@ public class VeinWorldData extends WorldSavedData {
             return result;
         }
 
-        /**
-         * 执行 clamp 逻辑。
-         *
-         * @param value 参数 value。
-         * @param min 参数 min。
-         * @param max 参数 max。
-         * @return 处理结果。
-        */
         private static int clamp(int value, int min, int max) {
             return Math.max(min, Math.min(max, value));
         }
     }
 
     /**
-     * tooltip 使用的矿物统计记录。
-     *
-     * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
-     * @version 0.0.1
-     * @since 2026/3/7
-    */
+     * Tooltip 使用的矿物统计记录
+     */
     public static class StatRecord {
+
         private final int packedState;
         private final int count;
 
-        /**
-         * 构造 StatRecord 实例。
-         *
-         * @param packedState 参数 packedState。
-         * @param count 参数 count。
-        */
         public StatRecord(int packedState, int count) {
             this.packedState = Math.max(0, packedState);
             this.count = Math.max(0, count);
         }
 
-        /**
-         * 获取 PackedState。
-         *
-         * @return 处理结果。
-        */
         public int getPackedState() {
             return packedState;
         }
 
-        /**
-         * 获取 Count。
-         *
-         * @return 处理结果。
-        */
         public int getCount() {
             return count;
         }
 
-        /**
-         * 执行 equals 逻辑。
-         *
-         * @param other 参数 other。
-         * @return 处理结果。
-        */
         @Override
         public boolean equals(@Nullable Object other) {
             if (this == other) {
@@ -695,11 +475,6 @@ public class VeinWorldData extends WorldSavedData {
             return packedState == stat.packedState && count == stat.count;
         }
 
-        /**
-         * 判断是否包含 hCode。
-         *
-         * @return 处理结果。
-        */
         @Override
         public int hashCode() {
             int result = packedState;

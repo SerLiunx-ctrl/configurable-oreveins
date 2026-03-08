@@ -3,14 +3,8 @@ package com.serliunx.configurableoreveins.jei;
 import com.serliunx.configurableoreveins.client.ClientNearbyVeinCache;
 import com.serliunx.configurableoreveins.config.BlockEntry;
 import com.serliunx.configurableoreveins.config.VeinDefinition;
-import com.serliunx.configurableoreveins.vein.LocatorVeinInfo;
 import com.serliunx.configurableoreveins.util.BlockStateResolver;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import javax.annotation.Nullable;
+import com.serliunx.configurableoreveins.vein.LocatorVeinInfo;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.block.Block;
@@ -20,8 +14,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.*;
+
 /**
- * JEI 中的矿脉来源配方包装器。
+ * JEI 中的矿脉来源配方包装器.
  *
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
@@ -43,11 +41,6 @@ public class OreVeinJeiRecipe implements IRecipeWrapper {
     private final List<String> outputTooltips;
     private final int hiddenOutputCount;
 
-    /**
-     * 构造 OreVeinJeiRecipe 实例。
-     *
-     * @param definition 参数 definition。
-    */
     public OreVeinJeiRecipe(VeinDefinition definition) {
         this.veinHash = definition.getName().hashCode();
         this.displayName = definition.getDisplayName();
@@ -55,7 +48,7 @@ public class OreVeinJeiRecipe implements IRecipeWrapper {
         this.maxY = definition.getMaxY();
         this.dimensionText = buildDimensionText(definition);
 
-        LinkedHashMap<Integer, Integer> weightByState = new LinkedHashMap<Integer, Integer>();
+        LinkedHashMap<Integer, Integer> weightByState = new LinkedHashMap<>();
         for (BlockEntry blockEntry : definition.getBlocks()) {
             if (blockEntry == null) {
                 continue;
@@ -65,67 +58,49 @@ public class OreVeinJeiRecipe implements IRecipeWrapper {
                 continue;
             }
             int packedState = packState(stack);
-            int currentWeight = weightByState.containsKey(packedState) ? weightByState.get(packedState) : 0;
+            int currentWeight = weightByState.getOrDefault(packedState, 0);
             weightByState.put(packedState, currentWeight + blockEntry.getWeight());
         }
 
         int totalWeight = 0;
         for (Integer weight : weightByState.values()) {
-            totalWeight += Math.max(0, weight.intValue());
+            totalWeight += Math.max(0, weight);
         }
-        List<ItemStack> allOutputs = new ArrayList<ItemStack>(weightByState.size());
-        List<String> allTooltips = new ArrayList<String>(weightByState.size());
+        List<ItemStack> allOutputs = new ArrayList<>(weightByState.size());
+        List<String> allTooltips = new ArrayList<>(weightByState.size());
         for (Map.Entry<Integer, Integer> entry : weightByState.entrySet()) {
             ItemStack stack = unpackState(entry.getKey());
             if (stack.isEmpty()) {
                 continue;
             }
             allOutputs.add(stack);
-            allTooltips.add(buildOutputTooltip(stack, entry.getValue().intValue(), totalWeight));
+            allTooltips.add(buildOutputTooltip(stack, entry.getValue(), totalWeight));
         }
 
         this.hiddenOutputCount = Math.max(0, allOutputs.size() - MAX_OUTPUT_SLOTS);
         this.outputs = allOutputs.size() <= MAX_OUTPUT_SLOTS
                 ? allOutputs
-                : new ArrayList<ItemStack>(allOutputs.subList(0, MAX_OUTPUT_SLOTS));
+                : new ArrayList<>(allOutputs.subList(0, MAX_OUTPUT_SLOTS));
         this.outputTooltips = allTooltips.size() <= MAX_OUTPUT_SLOTS
                 ? allTooltips
-                : new ArrayList<String>(allTooltips.subList(0, MAX_OUTPUT_SLOTS));
+                : new ArrayList<>(allTooltips.subList(0, MAX_OUTPUT_SLOTS));
     }
 
-    /**
-     * 获取 VeinHash。
-     *
-     * @return 处理结果。
-    */
     public int getVeinHash() {
         return veinHash;
     }
 
-    /**
-     * 获取 DisplayName。
-     *
-     * @return 处理结果。
-    */
     public String getDisplayName() {
         return displayName;
     }
 
-    /**
-     * 获取输出物列表。
-     *
-     * @return 处理结果。
-    */
     public List<ItemStack> getOutputs() {
         return outputs;
     }
 
     /**
-     * 获取输出物 tooltip。
-     *
-     * @param slotIndex 参数 slotIndex。
-     * @return 处理结果。
-    */
+     * 获取产物的Tooltip
+     */
     @Nullable
     public String getOutputTooltip(int slotIndex) {
         if (slotIndex < 0 || slotIndex >= outputTooltips.size()) {
@@ -134,36 +109,18 @@ public class OreVeinJeiRecipe implements IRecipeWrapper {
         return outputTooltips.get(slotIndex);
     }
 
-    /**
-     * 获取隐藏输出数量。
-     *
-     * @return 处理结果。
-    */
     public int getHiddenOutputCount() {
         return hiddenOutputCount;
     }
 
-    /**
-     * 将配方输出写入 JEI 原料容器。
-     *
-     * @param ingredients 参数 ingredients。
-    */
     @Override
+    @SuppressWarnings("all")
     public void getIngredients(IIngredients ingredients) {
         ingredients.setOutputs(ItemStack.class, outputs);
     }
 
-    /**
-     * 绘制配方额外信息。
-     *
-     * @param minecraft 参数 minecraft。
-     * @param recipeWidth 参数 recipeWidth。
-     * @param recipeHeight 参数 recipeHeight。
-     * @param mouseX 参数 mouseX。
-     * @param mouseY 参数 mouseY。
-    */
     @Override
-    public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
+    public void drawInfo(@Nonnull Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
         int textX = TEXT_AREA_X;
         int y = 6;
         y = drawWrappedText(minecraft, displayName, textX, y, 0x202020);
@@ -232,14 +189,6 @@ public class OreVeinJeiRecipe implements IRecipeWrapper {
         }
     }
 
-    /**
-     * 绘制最近矿脉的矿石统计。
-     *
-     * @param minecraft 参数 minecraft。
-     * @param nearest 参数 nearest。
-     * @param textX 参数 textX。
-     * @param startY 参数 startY。
-    */
     private void drawStats(Minecraft minecraft, LocatorVeinInfo nearest, int textX, int startY) {
         int[] oreStates = nearest.getOreStateKeys();
         int[] oreCounts = nearest.getOreCounts();
@@ -262,15 +211,8 @@ public class OreVeinJeiRecipe implements IRecipeWrapper {
     }
 
     /**
-     * 绘制自动换行文本并返回下一行起始 Y 坐标。
-     *
-     * @param minecraft 参数 minecraft。
-     * @param text 参数 text。
-     * @param textX 参数 textX。
-     * @param startY 参数 startY。
-     * @param color 参数 color。
-     * @return 处理结果。
-    */
+     * 绘制自动换行文本并返回下一行起始 Y 坐标.
+     */
     private int drawWrappedText(Minecraft minecraft, String text, int textX, int startY, int color) {
         List<String> wrapped = minecraft.fontRenderer.listFormattedStringToWidth(text, TEXT_AREA_WIDTH);
         int y = startY;
@@ -282,11 +224,8 @@ public class OreVeinJeiRecipe implements IRecipeWrapper {
     }
 
     /**
-     * 构建维度摘要文本。
-     *
-     * @param definition 参数 definition。
-     * @return 处理结果。
-    */
+     * 构建维度摘要文本.
+     */
     private static String buildDimensionText(VeinDefinition definition) {
         if (definition.getDimensionIds().isEmpty()) {
             return I18n.format("jei.configurableoreveins.ore_vein.all_dimensions");
@@ -299,13 +238,8 @@ public class OreVeinJeiRecipe implements IRecipeWrapper {
     }
 
     /**
-     * 构建输出矿物的 tooltip 文本。
-     *
-     * @param stack 参数 stack。
-     * @param weight 参数 weight。
-     * @param totalWeight 参数 totalWeight。
-     * @return 处理结果。
-    */
+     * 构建输出矿物的 tooltip 文本.
+     */
     private static String buildOutputTooltip(ItemStack stack, int weight, int totalWeight) {
         double percent = totalWeight <= 0 ? 0.0D : (weight * 100.0D) / totalWeight;
         return I18n.format(
@@ -316,44 +250,28 @@ public class OreVeinJeiRecipe implements IRecipeWrapper {
     }
 
     /**
-     * 根据配置方块创建物品堆。
-     *
-     * @param blockName 参数 blockName。
-     * @param meta 参数 meta。
-     * @return 处理结果。
-    */
+     * 根据配置方块创建物品堆信息.
+     */
     private static ItemStack createStack(String blockName, int meta) {
         net.minecraft.block.state.IBlockState state = BlockStateResolver.resolveState(blockName, meta);
         if (state == null) {
             return ItemStack.EMPTY;
         }
         Item item = Item.getItemFromBlock(state.getBlock());
-        if (item == null) {
-            return ItemStack.EMPTY;
-        }
         return new ItemStack(item, 1, meta);
     }
 
     /**
-     * 打包物品状态键。
-     *
-     * @param stack 参数 stack。
-     * @return 处理结果。
-    */
+     * 打包物品信息
+     */
     private static int packState(ItemStack stack) {
         Block block = Block.getBlockFromItem(stack.getItem());
-        if (block == null) {
-            return 0;
-        }
         return (Block.getIdFromBlock(block) << 4) | (stack.getMetadata() & 15);
     }
 
     /**
-     * 解包物品状态键。
-     *
-     * @param packedState 参数 packedState。
-     * @return 处理结果。
-    */
+     * 解包物品信息
+     */
     private static ItemStack unpackState(int packedState) {
         if (packedState <= 0) {
             return ItemStack.EMPTY;
@@ -361,13 +279,7 @@ public class OreVeinJeiRecipe implements IRecipeWrapper {
         int blockId = packedState >>> 4;
         int meta = packedState & 15;
         Block block = Block.getBlockById(blockId);
-        if (block == null) {
-            return ItemStack.EMPTY;
-        }
         Item item = Item.getItemFromBlock(block);
-        if (item == null) {
-            return ItemStack.EMPTY;
-        }
         return new ItemStack(item, 1, meta);
     }
 }

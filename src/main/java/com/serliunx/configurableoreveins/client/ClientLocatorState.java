@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
-*/
+ */
 public final class ClientLocatorState {
 
     @Nullable
@@ -20,7 +20,7 @@ public final class ClientLocatorState {
     /**
      * 设置当前客户端高亮矿脉。
      *
-     * @param vein 参数 vein。
+     * @param vein 矿脉信息
     */
     public static void setHighlightedVein(@Nullable LocatorVeinInfo vein) {
         highlightedVein = vein;
@@ -29,7 +29,7 @@ public final class ClientLocatorState {
     /**
      * 获取当前客户端高亮矿脉。
      *
-     * @return 处理结果。
+     * @return 矿脉信息
     */
     @Nullable
     public static LocatorVeinInfo getHighlightedVein() {

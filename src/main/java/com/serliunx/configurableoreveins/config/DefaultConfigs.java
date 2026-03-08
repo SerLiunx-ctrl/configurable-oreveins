@@ -5,23 +5,21 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 默认矿脉配置构造器。
+ * 默认矿脉配置构造器
  *
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
-*/
+ */
 public final class DefaultConfigs {
 
-    /** 构造 DefaultConfigs 实例。 */
     private DefaultConfigs() {}
 
     /**
-     * 创建默认配置对象。
-     *
-     * @return 处理结果。
-    */
+     * 创建默认配置对象
+     */
     public static ModConfigData create() {
+
         ModConfigData data = new ModConfigData();
         List<VeinDefinition> veins = new ArrayList<>();
 
@@ -63,13 +61,8 @@ public final class DefaultConfigs {
     }
 
     /**
-     * 创建 Block。
-     *
-     * @param block 参数 block。
-     * @param meta 参数 meta。
-     * @param weight 参数 weight。
-     * @return 处理结果。
-    */
+     * 创建方块信息
+     */
     private static BlockEntry createBlock(String block, int meta, int weight) {
         BlockEntry entry = new BlockEntry();
         entry.setBlock(block);

@@ -13,7 +13,7 @@ import net.minecraftforge.common.config.ConfigManager;
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
-*/
+ */
 @Config(modid = ConfigurableOreVeinsMod.MOD_ID, name = "General")
 public final class GeneralConfig {
 
