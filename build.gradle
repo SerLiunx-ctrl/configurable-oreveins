@@ -42,8 +42,8 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${project.forge_version}"
-    compileOnly fg.deobf("mezz.jei:jei_1.12.2:${project.jei_version}:api")
-    runtimeOnly fg.deobf("mezz.jei:jei_1.12.2:${project.jei_version}")
+    compileOnly "mezz.jei:jei_1.12.2:${project.jei_version}:api"
+    runtimeOnly "mezz.jei:jei_1.12.2:${project.jei_version}"
 }
 
 processResources {
@@ -63,7 +63,7 @@ processResources {
     }
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
 }
 
