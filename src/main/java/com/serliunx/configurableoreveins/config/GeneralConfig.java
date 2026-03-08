@@ -8,14 +8,15 @@ import net.minecraftforge.common.config.Config.Name;
 import net.minecraftforge.common.config.ConfigManager;
 
 /**
- * Forge 总配置定义。
+ * 通用配置
  *
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
 */
-@Config(modid = ConfigurableOreVeinsMod.MOD_ID, name = ConfigurableOreVeinsMod.MOD_ID)
+@Config(modid = ConfigurableOreVeinsMod.MOD_ID, name = "General")
 public final class GeneralConfig {
+
     @Name("disableIronOre")
     @LangKey("config.configurableoreveins.disableIronOre")
     @Comment("Disable vanilla iron ore generation.")
@@ -61,10 +62,11 @@ public final class GeneralConfig {
     @Comment("Maximum number of nearby veins the locator reports.")
     public static int locatorMaxResults = 8;
 
-    /** 构造 GeneralConfig 实例。 */
     private GeneralConfig() {}
 
-    /** 同步 Forge 总配置。 */
+    /**
+     * 配置同步
+     */
     public static void sync() {
         ConfigManager.sync(ConfigurableOreVeinsMod.MOD_ID, Config.Type.INSTANCE);
     }

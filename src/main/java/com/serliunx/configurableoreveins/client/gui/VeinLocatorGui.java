@@ -3,14 +3,12 @@ package com.serliunx.configurableoreveins.client.gui;
 import com.serliunx.configurableoreveins.client.ClientNearbyVeinCache;
 import com.serliunx.configurableoreveins.client.ClientLocatorState;
 import com.serliunx.configurableoreveins.item.VeinLocatorItem;
-import com.serliunx.configurableoreveins.network.LocatorVeinInfo;
-import com.serliunx.configurableoreveins.network.MarkVeinMinedMessage;
+import com.serliunx.configurableoreveins.vein.LocatorVeinInfo;
+import com.serliunx.configurableoreveins.network.message.MarkVeinMinedMessage;
 import com.serliunx.configurableoreveins.network.NetworkHandler;
-import com.serliunx.configurableoreveins.network.SetLocatorTargetMessage;
+import com.serliunx.configurableoreveins.network.message.SetLocatorTargetMessage;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import net.minecraft.block.Block;
@@ -28,7 +26,7 @@ import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Mouse;
 
 /**
- * 矿脉定位器客户端界面。
+ * 矿脉定位器客户端界面渲染逻辑
  *
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
@@ -75,11 +73,10 @@ public class VeinLocatorGui extends GuiScreen {
     public VeinLocatorGui(int handOrdinal, int rangeChunks, List<LocatorVeinInfo> veins) {
         this.hand = EnumHand.values()[Math.max(0, Math.min(EnumHand.values().length - 1, handOrdinal))];
         this.rangeChunks = rangeChunks;
-        this.allVeins = new ArrayList<LocatorVeinInfo>(veins);
+        this.allVeins = new ArrayList<>(veins);
         this.visibleVeins.addAll(veins);
     }
 
-    /** 执行 initGui 逻辑。 */
     @Override
     public void initGui() {
         guiLeft = (width - xSize) / 2;
@@ -91,21 +88,14 @@ public class VeinLocatorGui extends GuiScreen {
         refreshVisibleVeins();
     }
 
-    /** 更新 Screen。 */
     @Override
     public void updateScreen() {
         super.updateScreen();
         searchField.updateCursorCounter();
     }
 
-    /**
-     * 执行 actionPerformed 逻辑。
-     *
-     * @param button 参数 button。
-     * @throws IOException 执行过程中可能抛出的异常。
-    */
     @Override
-    protected void actionPerformed(GuiButton button) throws IOException {
+    protected void actionPerformed(GuiButton button) {
         if (button.id == BUTTON_CLEAR_ID) {
             ClientLocatorState.setHighlightedVein(null);
             ItemStack stack = mc.player.getHeldItem(hand);
@@ -146,13 +136,6 @@ public class VeinLocatorGui extends GuiScreen {
         }
     }
 
-    /**
-     * 绘制 Screen。
-     *
-     * @param mouseX 参数 mouseX。
-     * @param mouseY 参数 mouseY。
-     * @param partialTicks 参数 partialTicks。
-    */
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawDefaultBackground();
@@ -216,21 +199,11 @@ public class VeinLocatorGui extends GuiScreen {
         drawHoveredVeinTooltip(mouseX, mouseY);
     }
 
-    /**
-     * 执行 doesGuiPauseGame 逻辑。
-     *
-     * @return 处理结果。
-    */
     @Override
     public boolean doesGuiPauseGame() {
         return false;
     }
 
-    /**
-     * 执行 handleMouseInput 逻辑。
-     *
-     * @throws IOException 执行过程中可能抛出的异常。
-    */
     @Override
     public void handleMouseInput() throws IOException {
         super.handleMouseInput();
@@ -242,14 +215,6 @@ public class VeinLocatorGui extends GuiScreen {
         }
     }
 
-    /**
-     * 执行 mouseClicked 逻辑。
-     *
-     * @param mouseX 参数 mouseX。
-     * @param mouseY 参数 mouseY。
-     * @param mouseButton 参数 mouseButton。
-     * @throws IOException 执行过程中可能抛出的异常。
-    */
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
@@ -261,14 +226,6 @@ public class VeinLocatorGui extends GuiScreen {
         }
     }
 
-    /**
-     * 执行 mouseClickMove 逻辑。
-     *
-     * @param mouseX 参数 mouseX。
-     * @param mouseY 参数 mouseY。
-     * @param clickedMouseButton 参数 clickedMouseButton。
-     * @param timeSinceLastClick 参数 timeSinceLastClick。
-    */
     @Override
     protected void mouseClickMove(
             int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
@@ -279,26 +236,12 @@ public class VeinLocatorGui extends GuiScreen {
         }
     }
 
-    /**
-     * 执行 mouseReleased 逻辑。
-     *
-     * @param mouseX 参数 mouseX。
-     * @param mouseY 参数 mouseY。
-     * @param state 参数 state。
-    */
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
         super.mouseReleased(mouseX, mouseY, state);
         draggingScrollBar = false;
     }
 
-    /**
-     * 执行 keyTyped 逻辑。
-     *
-     * @param typedChar 参数 typedChar。
-     * @param keyCode 参数 keyCode。
-     * @throws IOException 执行过程中可能抛出的异常。
-    */
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if (searchField.textboxKeyTyped(typedChar, keyCode)) {
@@ -308,7 +251,6 @@ public class VeinLocatorGui extends GuiScreen {
         super.keyTyped(typedChar, keyCode);
     }
 
-    /** 执行 rebuildButtons 逻辑。 */
     private void rebuildButtons() {
         buttonList.clear();
         veinButtons.clear();
@@ -371,20 +313,10 @@ public class VeinLocatorGui extends GuiScreen {
                         tr("gui.configurableoreveins.vein_locator.done")));
     }
 
-    /**
-     * 获取 MaxScrollOffset。
-     *
-     * @return 处理结果。
-    */
     private int getMaxScrollOffset() {
         return Math.max(0, visibleVeins.size() - VISIBLE_ROWS);
     }
 
-    /**
-     * 设置 ScrollOffset。
-     *
-     * @param offset 参数 offset。
-    */
     private void setScrollOffset(int offset) {
         int clamped = Math.max(0, Math.min(getMaxScrollOffset(), offset));
         if (clamped != scrollOffset) {
@@ -393,12 +325,6 @@ public class VeinLocatorGui extends GuiScreen {
         }
     }
 
-    /**
-     * 构建 VeinLabel。
-     *
-     * @param vein 参数 vein。
-     * @return 处理结果。
-    */
     private String buildVeinLabel(LocatorVeinInfo vein) {
         int horizontalDistance = getHorizontalDistance(vein);
         String suffix = "  [" + horizontalDistance + "m]";
@@ -408,11 +334,6 @@ public class VeinLocatorGui extends GuiScreen {
         return name + suffix;
     }
 
-    /**
-     * 切换矿脉的已挖掘状态。
-     *
-     * @param index 参数 index。
-    */
     private void toggleVeinMined(int index) {
         if (index < 0 || index >= visibleVeins.size()) {
             return;
@@ -435,11 +356,6 @@ public class VeinLocatorGui extends GuiScreen {
         NetworkHandler.CHANNEL.sendToServer(MarkVeinMinedMessage.set(hand, target, mined));
     }
 
-    /**
-     * 选择 Vein。
-     *
-     * @param index 参数 index。
-    */
     private void selectVein(int index) {
         if (index < 0 || index >= visibleVeins.size()) {
             return;
@@ -465,88 +381,40 @@ public class VeinLocatorGui extends GuiScreen {
         mc.displayGuiScreen(null);
     }
 
-    /**
-     * 获取 ListLeft。
-     *
-     * @return 处理结果。
-    */
     private int getListLeft() {
         return guiLeft + LIST_MARGIN;
     }
 
-    /**
-     * 获取 ListTop。
-     *
-     * @return 处理结果。
-    */
     private int getListTop() {
         return guiTop + HEADER_HEIGHT + 10;
     }
 
-    /**
-     * 获取 ListWidth。
-     *
-     * @return 处理结果。
-    */
     private int getListWidth() {
         return xSize - (LIST_MARGIN * 2) - SCROLLBAR_WIDTH - SCROLLBAR_GAP;
     }
 
-    /**
-     * 获取矿脉条目按钮宽度。
-     *
-     * @return 处理结果。
-    */
     private int getEntryButtonWidth() {
         return getListWidth() - 44;
     }
 
-    /**
-     * 获取矿脉状态按钮文案。
-     *
-     * @param vein 参数 vein。
-     * @return 处理结果。
-    */
     private String getMarkButtonLabel(LocatorVeinInfo vein) {
         return vein.isMined()
                 ? tr("gui.configurableoreveins.vein_locator.unmark_mined")
                 : tr("gui.configurableoreveins.vein_locator.mark_mined");
     }
 
-    /**
-     * 获取 TrackLeft。
-     *
-     * @return 处理结果。
-    */
     private int getTrackLeft() {
         return getListLeft() + getListWidth() + SCROLLBAR_GAP;
     }
 
-    /**
-     * 获取 TrackTop。
-     *
-     * @return 处理结果。
-    */
     private int getTrackTop() {
         return getListTop();
     }
 
-    /**
-     * 获取 TrackHeight。
-     *
-     * @return 处理结果。
-    */
     private int getTrackHeight() {
         return (VISIBLE_ROWS * ROW_HEIGHT) - 4;
     }
 
-    /**
-     * 判断 InsideScrollTrack。
-     *
-     * @param mouseX 参数 mouseX。
-     * @param mouseY 参数 mouseY。
-     * @return 处理结果。
-    */
     private boolean isInsideScrollTrack(int mouseX, int mouseY) {
         return mouseX >= getTrackLeft()
                 && mouseX < getTrackLeft() + SCROLLBAR_WIDTH
@@ -554,11 +422,6 @@ public class VeinLocatorGui extends GuiScreen {
                 && mouseY < getTrackTop() + getTrackHeight();
     }
 
-    /**
-     * 更新 ScrollFromMouse。
-     *
-     * @param mouseY 参数 mouseY。
-    */
     private void updateScrollFromMouse(int mouseY) {
         int maxOffset = getMaxScrollOffset();
         if (maxOffset <= 0) {
@@ -574,11 +437,6 @@ public class VeinLocatorGui extends GuiScreen {
         setScrollOffset((int) Math.round(ratio * maxOffset));
     }
 
-    /**
-     * 获取 ThumbHeight。
-     *
-     * @return 处理结果。
-    */
     private int getThumbHeight() {
         if (visibleVeins.isEmpty()) {
             return getTrackHeight();
@@ -591,7 +449,6 @@ public class VeinLocatorGui extends GuiScreen {
         return Math.max(18, Math.min(getTrackHeight(), height));
     }
 
-    /** 绘制 ScrollBar。 */
     private void drawScrollBar() {
         int trackLeft = getTrackLeft();
         int trackTop = getTrackTop();
@@ -622,11 +479,11 @@ public class VeinLocatorGui extends GuiScreen {
                 0xB0505050);
     }
 
-    /** 绘制 VeinIcons。 */
     private void drawVeinIcons() {
-        if (mc == null || mc.getRenderItem() == null) {
+        if (mc == null) {
             return;
         }
+
         RenderHelper.enableGUIStandardItemLighting();
         for (int row = 0; row < veinButtons.size(); row++) {
             int veinIndex = scrollOffset + row;
@@ -646,11 +503,8 @@ public class VeinLocatorGui extends GuiScreen {
     }
 
     /**
-     * 绘制 HoveredVeinTooltip。
-     *
-     * @param mouseX 参数 mouseX。
-     * @param mouseY 参数 mouseY。
-    */
+     * 矿脉条目Tooltip渲染
+     */
     private void drawHoveredVeinTooltip(int mouseX, int mouseY) {
         LocatorVeinInfo hovered = getHoveredVein(mouseX, mouseY);
         if (hovered == null) {
@@ -687,9 +541,7 @@ public class VeinLocatorGui extends GuiScreen {
         int x = mouseX + 12;
         int y = mouseY - 12;
         int height = 8;
-        if (!headerLines.isEmpty()) {
-            height += 2 + ((headerLines.size() - 1) * textLineHeight);
-        }
+        height += 2 + ((headerLines.size() - 1) * textLineHeight);
         if (!oreLines.isEmpty()) {
             height += oreSectionGap + (oreLines.size() * oreLineHeight);
         }
@@ -724,7 +576,7 @@ public class VeinLocatorGui extends GuiScreen {
             cursorY += textLineHeight;
         }
 
-        if (!oreLines.isEmpty() && mc != null && mc.getRenderItem() != null) {
+        if (!oreLines.isEmpty() && mc != null) {
             cursorY += oreSectionGap;
             RenderHelper.enableGUIStandardItemLighting();
             GlStateManager.enableRescaleNormal();
@@ -746,7 +598,6 @@ public class VeinLocatorGui extends GuiScreen {
         GlStateManager.enableDepth();
     }
 
-    /** 绘制原版样式的 tooltip 背景。 */
     private void drawVanillaTooltipBackground(int x, int y, int width, int height) {
         int background = 0xF0100010;
         int borderStart = 0x505000FF;
@@ -763,7 +614,6 @@ public class VeinLocatorGui extends GuiScreen {
         drawGradientRect(x - 3, y + height + 2, x + width + 3, y + height + 3, borderEnd, borderEnd);
     }
 
-    /** 执行 refreshVisibleVeins 逻辑。 */
     private void refreshVisibleVeins() {
         String query = searchField == null ? "" : searchField.getText().trim().toLowerCase(Locale.ROOT);
         visibleVeins.clear();
@@ -773,40 +623,29 @@ public class VeinLocatorGui extends GuiScreen {
             }
         }
 
-        Collections.sort(
-                visibleVeins,
-                new Comparator<LocatorVeinInfo>() {
-                    @Override
-                    public int compare(LocatorVeinInfo left, LocatorVeinInfo right) {
-                        if (left.isMined() != right.isMined()) {
-                            return left.isMined() ? 1 : -1;
-                        }
-                        if (sortMode == SortMode.NAME_ASC) {
-                            int byName = left.getName().compareToIgnoreCase(right.getName());
-                            if (byName != 0) {
-                                return byName;
-                            }
-                            return Integer.compare(getHorizontalDistance(left), getHorizontalDistance(right));
-                        }
-                        int byDistance =
-                                Integer.compare(getHorizontalDistance(left), getHorizontalDistance(right));
-                        if (byDistance != 0) {
-                            return byDistance;
-                        }
-                        return left.getName().compareToIgnoreCase(right.getName());
-                    }
-                });
+        visibleVeins.sort((left, right) -> {
+            if (left.isMined() != right.isMined()) {
+                return left.isMined() ? 1 : -1;
+            }
+            if (sortMode == SortMode.NAME_ASC) {
+                int byName = left.getName().compareToIgnoreCase(right.getName());
+                if (byName != 0) {
+                    return byName;
+                }
+                return Integer.compare(getHorizontalDistance(left), getHorizontalDistance(right));
+            }
+            int byDistance =
+                    Integer.compare(getHorizontalDistance(left), getHorizontalDistance(right));
+            if (byDistance != 0) {
+                return byDistance;
+            }
+            return left.getName().compareToIgnoreCase(right.getName());
+        });
 
         scrollOffset = 0;
         rebuildButtons();
     }
 
-    /**
-     * 获取 HorizontalDistance。
-     *
-     * @param vein 参数 vein。
-     * @return 处理结果。
-    */
     private int getHorizontalDistance(LocatorVeinInfo vein) {
         if (mc == null || mc.player == null) {
             return 0;
@@ -816,33 +655,16 @@ public class VeinLocatorGui extends GuiScreen {
         return Math.round((float) Math.sqrt((dx * dx) + (dz * dz)));
     }
 
-    /**
-     * 获取 SortButtonLabel。
-     *
-     * @return 处理结果。
-    */
     private String getSortButtonLabel() {
         return sortMode == SortMode.NAME_ASC
                 ? tr("gui.configurableoreveins.vein_locator.sort.name")
                 : tr("gui.configurableoreveins.vein_locator.sort.distance");
     }
 
-    /**
-     * 创建 IconStack。
-     *
-     * @param vein 参数 vein。
-     * @return 处理结果。
-    */
     private ItemStack createIconStack(LocatorVeinInfo vein) {
         return createItemStackFromPackedState((vein.getIconBlockId() << 4) | (vein.getIconMeta() & 15));
     }
 
-    /**
-     * 创建 ItemStackFromPackedState。
-     *
-     * @param packedState 参数 packedState。
-     * @return 处理结果。
-    */
     private ItemStack createItemStackFromPackedState(int packedState) {
         if (packedState <= 0) {
             return ItemStack.EMPTY;
@@ -919,10 +741,7 @@ public class VeinLocatorGui extends GuiScreen {
 
     /**
      * 更新本地矿脉条目的已挖掘状态。
-     *
-     * @param target 参数 target。
-     * @param mined 参数 mined。
-    */
+     */
     private void updateLocalVeinState(LocatorVeinInfo target, boolean mined) {
         for (int index = 0; index < allVeins.size(); index++) {
             LocatorVeinInfo info = allVeins.get(index);
@@ -953,34 +772,15 @@ public class VeinLocatorGui extends GuiScreen {
         }
     }
 
-    /**
-     * 执行 tr 逻辑。
-     *
-     * @param key 参数 key。
-     * @param args 参数 args。
-     * @return 处理结果。
-    */
     private String tr(String key, Object... args) {
         return I18n.format(key, args);
     }
 
-    /**
-     * tooltip 中的一行矿物统计展示数据。
-     *
-     * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
-     * @version 0.0.1
-     * @since 2026/3/7
-    */
     private static class TooltipOreLine {
+
         private final ItemStack stack;
         private final String label;
 
-        /**
-         * 构造 TooltipOreLine 实例。
-         *
-         * @param stack 参数 stack。
-         * @param label 参数 label。
-        */
         private TooltipOreLine(ItemStack stack, String label) {
             this.stack = stack;
             this.label = label;
@@ -989,20 +789,15 @@ public class VeinLocatorGui extends GuiScreen {
 
     /**
      * 矿脉列表排序模式枚举。
-     *
-     * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
-     * @version 0.0.1
-     * @since 2026/3/7
-    */
+     */
     private enum SortMode {
+
         DISTANCE_ASC,
         NAME_ASC;
 
         /**
-         * 执行 next 逻辑。
-         *
-         * @return 处理结果。
-        */
+         * 轮换
+         */
         private SortMode next() {
             return this == DISTANCE_ASC ? NAME_ASC : DISTANCE_ASC;
         }

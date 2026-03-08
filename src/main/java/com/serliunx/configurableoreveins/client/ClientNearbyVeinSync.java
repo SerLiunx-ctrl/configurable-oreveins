@@ -1,7 +1,7 @@
 package com.serliunx.configurableoreveins.client;
 
 import com.serliunx.configurableoreveins.network.NetworkHandler;
-import com.serliunx.configurableoreveins.network.RequestNearbyVeinsMessage;
+import com.serliunx.configurableoreveins.network.message.RequestNearbyVeinsMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;

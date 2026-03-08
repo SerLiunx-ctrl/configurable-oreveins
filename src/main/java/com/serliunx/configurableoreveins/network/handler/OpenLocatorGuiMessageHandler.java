@@ -1,6 +1,7 @@
-package com.serliunx.configurableoreveins.network;
+package com.serliunx.configurableoreveins.network.handler;
 
 import com.serliunx.configurableoreveins.ConfigurableOreVeinsMod;
+import com.serliunx.configurableoreveins.network.message.OpenLocatorGuiMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -12,8 +13,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
  * @version 0.0.1
  * @since 2026/3/7
 */
-public class OpenLocatorGuiMessageHandler
-        implements IMessageHandler<OpenLocatorGuiMessage, IMessage> {
+public final class OpenLocatorGuiMessageHandler implements IMessageHandler<OpenLocatorGuiMessage, IMessage> {
+
     /**
      * 执行 onMessage 逻辑。
      *

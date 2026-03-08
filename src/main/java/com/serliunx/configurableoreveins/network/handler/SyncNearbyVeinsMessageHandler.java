@@ -1,6 +1,7 @@
-package com.serliunx.configurableoreveins.network;
+package com.serliunx.configurableoreveins.network.handler;
 
 import com.serliunx.configurableoreveins.client.ClientNearbyVeinCache;
+import com.serliunx.configurableoreveins.network.message.SyncNearbyVeinsMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -13,7 +14,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
  * @version 0.0.1
  * @since 2026/3/7
 */
-public class SyncNearbyVeinsMessageHandler implements IMessageHandler<SyncNearbyVeinsMessage, IMessage> {
+public final class SyncNearbyVeinsMessageHandler implements IMessageHandler<SyncNearbyVeinsMessage, IMessage> {
+
     /**
      * 执行 onMessage 逻辑。
      *
@@ -25,13 +27,8 @@ public class SyncNearbyVeinsMessageHandler implements IMessageHandler<SyncNearby
     public IMessage onMessage(final SyncNearbyVeinsMessage message, MessageContext ctx) {
         Minecraft.getMinecraft()
                 .addScheduledTask(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                ClientNearbyVeinCache.update(
-                                        message.getDimensionId(), message.getRangeChunks(), message.getVeins());
-                            }
-                        });
+                        () -> ClientNearbyVeinCache.update(message.getDimensionId(), message.getRangeChunks(), message.getVeins())
+                );
         return null;
     }
 }

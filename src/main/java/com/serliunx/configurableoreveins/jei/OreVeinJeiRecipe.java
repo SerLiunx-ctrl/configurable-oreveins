@@ -3,7 +3,7 @@ package com.serliunx.configurableoreveins.jei;
 import com.serliunx.configurableoreveins.client.ClientNearbyVeinCache;
 import com.serliunx.configurableoreveins.config.BlockEntry;
 import com.serliunx.configurableoreveins.config.VeinDefinition;
-import com.serliunx.configurableoreveins.network.LocatorVeinInfo;
+import com.serliunx.configurableoreveins.vein.LocatorVeinInfo;
 import com.serliunx.configurableoreveins.util.BlockStateResolver;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

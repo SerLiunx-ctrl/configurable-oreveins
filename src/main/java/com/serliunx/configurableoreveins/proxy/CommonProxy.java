@@ -1,6 +1,6 @@
 package com.serliunx.configurableoreveins.proxy;
 
-import com.serliunx.configurableoreveins.network.OpenLocatorGuiMessage;
+import com.serliunx.configurableoreveins.network.message.OpenLocatorGuiMessage;
 
 /**
  * 通用代理基类。

@@ -1,6 +1,7 @@
 package com.serliunx.configurableoreveins;
 
 import com.serliunx.configurableoreveins.command.OreVeinsCommand;
+import com.serliunx.configurableoreveins.config.ClientConfig;
 import com.serliunx.configurableoreveins.config.GeneralConfig;
 import com.serliunx.configurableoreveins.config.ModConfigManager;
 import com.serliunx.configurableoreveins.network.NetworkHandler;
@@ -18,7 +19,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**
- * Configurable Ore Veins 模组主入口。
+ * 主类
  *
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
@@ -49,6 +50,7 @@ public class ConfigurableOreVeinsMod {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         GeneralConfig.sync();
+        ClientConfig.sync();
         NetworkHandler.init();
         File configDirectory = new File(event.getModConfigurationDirectory(), MOD_ID);
         configManager = new ModConfigManager(configDirectory);

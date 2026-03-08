@@ -1,4 +1,4 @@
-package com.serliunx.configurableoreveins.network;
+package com.serliunx.configurableoreveins.vein;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.ByteBufUtils;

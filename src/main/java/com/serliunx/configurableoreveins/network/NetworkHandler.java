@@ -1,6 +1,8 @@
 package com.serliunx.configurableoreveins.network;
 
 import com.serliunx.configurableoreveins.ConfigurableOreVeinsMod;
+import com.serliunx.configurableoreveins.network.handler.*;
+import com.serliunx.configurableoreveins.network.message.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
@@ -13,18 +15,20 @@ import net.minecraftforge.fml.relauncher.Side;
  * @since 2026/3/7
 */
 public final class NetworkHandler {
-    public static final SimpleNetworkWrapper CHANNEL =
-            NetworkRegistry.INSTANCE.newSimpleChannel(ConfigurableOreVeinsMod.MOD_ID);
 
+    public static final SimpleNetworkWrapper CHANNEL = NetworkRegistry.INSTANCE.newSimpleChannel(ConfigurableOreVeinsMod.MOD_ID);
+
+    /**
+     * 注册时自行递增的消息ID
+     */
     private static int nextMessageId = 0;
 
-    /** 构造 NetworkHandler 实例。 */
     private NetworkHandler() {}
 
     /** 执行模组初始化逻辑。 */
     public static void init() {
         CHANNEL.registerMessage(
-                SetLocatorTargetMessage.Handler.class,
+                SetLocatorTargetMessageHandler.class,
                 SetLocatorTargetMessage.class,
                 nextMessageId++,
                 Side.SERVER);
@@ -34,7 +38,7 @@ public final class NetworkHandler {
                 nextMessageId++,
                 Side.CLIENT);
         CHANNEL.registerMessage(
-                RequestNearbyVeinsMessage.Handler.class,
+                RequestNearbyVeinsMessageHandler.class,
                 RequestNearbyVeinsMessage.class,
                 nextMessageId++,
                 Side.SERVER);
@@ -44,7 +48,7 @@ public final class NetworkHandler {
                 nextMessageId++,
                 Side.CLIENT);
         CHANNEL.registerMessage(
-                MarkVeinMinedMessage.Handler.class,
+                MarkVeinMinedMessageHandler.class,
                 MarkVeinMinedMessage.class,
                 nextMessageId++,
                 Side.SERVER);

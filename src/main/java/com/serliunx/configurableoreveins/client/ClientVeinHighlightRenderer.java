@@ -1,6 +1,8 @@
 package com.serliunx.configurableoreveins.client;
 
-import com.serliunx.configurableoreveins.network.LocatorVeinInfo;
+import com.serliunx.configurableoreveins.config.ClientConfig;
+import com.serliunx.configurableoreveins.config.GeneralConfig;
+import com.serliunx.configurableoreveins.vein.LocatorVeinInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -20,10 +22,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class ClientVeinHighlightRenderer {
 
     /**
-     * 在世界最后渲染阶段绘制矿脉高亮效果。
-     *
-     * @param event 参数 event。
-    */
+     * 处理渲染事件, 是否要高亮显示矿脉
+     */
     @SubscribeEvent
     public void onRenderWorldLast(RenderWorldLastEvent event) {
         LocatorVeinInfo target = ClientLocatorState.getHighlightedVein();
@@ -74,6 +74,10 @@ public class ClientVeinHighlightRenderer {
         GlStateManager.disableBlend();
         GlStateManager.popMatrix();
 
+        if (!ClientConfig.renderHighlightName) {
+            return;
+        }
+
         renderNameplate(
                 target.getName(),
                 target.getCenterX() + 0.5D,
@@ -89,18 +93,7 @@ public class ClientVeinHighlightRenderer {
 
     /**
      * 渲染矿脉名称悬浮文字。
-     *
-     * @param text 参数 text。
-     * @param worldX 参数 worldX。
-     * @param worldY 参数 worldY。
-     * @param worldZ 参数 worldZ。
-     * @param viewerX 参数 viewerX。
-     * @param viewerY 参数 viewerY。
-     * @param viewerZ 参数 viewerZ。
-     * @param red 参数 red。
-     * @param green 参数 green。
-     * @param blue 参数 blue。
-    */
+     */
     private void renderNameplate(
             String text,
             double worldX,

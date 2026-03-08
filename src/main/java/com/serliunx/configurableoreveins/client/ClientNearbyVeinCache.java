@@ -1,6 +1,6 @@
 package com.serliunx.configurableoreveins.client;
 
-import com.serliunx.configurableoreveins.network.LocatorVeinInfo;
+import com.serliunx.configurableoreveins.vein.LocatorVeinInfo;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,30 +16,32 @@ import net.minecraft.entity.player.EntityPlayer;
  * @since 2026/3/7
 */
 public final class ClientNearbyVeinCache {
+
     private static int dimensionId = Integer.MIN_VALUE;
     private static int rangeChunks = 0;
     private static long lastUpdateTick = -1L;
     private static List<LocatorVeinInfo> nearbyVeins = Collections.emptyList();
 
-    /** 构造 ClientNearbyVeinCache 实例。 */
     private ClientNearbyVeinCache() {}
 
     /**
      * 更新客户端附近矿脉缓存。
      *
-     * @param newDimensionId 参数 newDimensionId。
-     * @param newRangeChunks 参数 newRangeChunks。
-     * @param veins 参数 veins。
+     * @param newDimensionId 维度ID（哪个世界）
+     * @param newRangeChunks 区块范围
+     * @param veins 矿脉信息
     */
     public static void update(int newDimensionId, int newRangeChunks, List<LocatorVeinInfo> veins) {
         dimensionId = newDimensionId;
         rangeChunks = Math.max(0, newRangeChunks);
-        nearbyVeins = veins == null ? Collections.<LocatorVeinInfo>emptyList() : new ArrayList<LocatorVeinInfo>(veins);
+        nearbyVeins = veins == null ? Collections.emptyList() : new ArrayList<>(veins);
         Minecraft minecraft = Minecraft.getMinecraft();
         lastUpdateTick = minecraft.world == null ? -1L : minecraft.world.getTotalWorldTime();
     }
 
-    /** 清空客户端附近矿脉缓存。 */
+    /**
+     * 清空缓存信息
+     */
     public static void clear() {
         dimensionId = Integer.MIN_VALUE;
         rangeChunks = 0;
@@ -50,17 +52,17 @@ public final class ClientNearbyVeinCache {
     /**
      * 更新缓存中矿脉的已挖掘状态。
      *
-     * @param dimensionId 参数 dimensionId。
-     * @param chunkX 参数 chunkX。
-     * @param chunkZ 参数 chunkZ。
-     * @param veinHash 参数 veinHash。
-     * @param mined 参数 mined。
+     * @param dimensionId 维度
+     * @param chunkX 区块X坐标
+     * @param chunkZ 区块Z坐标
+     * @param veinHash 矿脉哈希
+     * @param mined 是否已挖掘
     */
     public static void setMined(int dimensionId, int chunkX, int chunkZ, int veinHash, boolean mined) {
         if (ClientNearbyVeinCache.dimensionId != dimensionId || nearbyVeins.isEmpty()) {
             return;
         }
-        List<LocatorVeinInfo> updated = new ArrayList<LocatorVeinInfo>(nearbyVeins.size());
+        List<LocatorVeinInfo> updated = new ArrayList<>(nearbyVeins.size());
         for (LocatorVeinInfo info : nearbyVeins) {
             if (info.getChunkX() == chunkX && info.getChunkZ() == chunkZ && info.getVeinHash() == veinHash) {
                 updated.add(
@@ -89,18 +91,14 @@ public final class ClientNearbyVeinCache {
 
     /**
      * 获取附近矿脉范围。
-     *
-     * @return 处理结果。
-    */
+     */
     public static int getRangeChunks() {
         return rangeChunks;
     }
 
     /**
      * 获取缓存最后更新时间。
-     *
-     * @return 处理结果。
-    */
+     */
     public static long getLastUpdateTick() {
         return lastUpdateTick;
     }
@@ -108,9 +106,9 @@ public final class ClientNearbyVeinCache {
     /**
      * 获取指定矿脉在缓存中的总数。
      *
-     * @param veinHash 参数 veinHash。
-     * @return 处理结果。
-    */
+     * @param veinHash 矿脉哈希
+     * @return 总数
+     */
     public static int getNearbyCount(int veinHash) {
         int count = 0;
         for (LocatorVeinInfo info : getCurrentDimensionVeins()) {
@@ -124,8 +122,8 @@ public final class ClientNearbyVeinCache {
     /**
      * 获取当前维度中最近的矿脉记录。
      *
-     * @param veinHash 参数 veinHash。
-     * @return 处理结果。
+     * @param veinHash 矿脉哈希
+     * @return 矿脉信息
     */
     @Nullable
     public static LocatorVeinInfo getNearestVein(int veinHash) {
@@ -156,11 +154,12 @@ public final class ClientNearbyVeinCache {
     /**
      * 获取当前维度的矿脉快照。
      *
-     * @return 处理结果。
+     * @return 矿脉列表
     */
     public static List<LocatorVeinInfo> getCurrentDimensionVeins() {
         Minecraft minecraft = Minecraft.getMinecraft();
-        if (minecraft.world == null || minecraft.world.provider.getDimension() != dimensionId) {
+        if (minecraft.world == null ||
+                minecraft.world.provider.getDimension() != dimensionId) {
             return Collections.emptyList();
         }
         return nearbyVeins;

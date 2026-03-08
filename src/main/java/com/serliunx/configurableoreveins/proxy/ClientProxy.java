@@ -4,7 +4,7 @@ import com.serliunx.configurableoreveins.client.ClientNearbyVeinCache;
 import com.serliunx.configurableoreveins.client.ClientNearbyVeinSync;
 import com.serliunx.configurableoreveins.client.ClientVeinHighlightRenderer;
 import com.serliunx.configurableoreveins.client.gui.VeinLocatorGui;
-import com.serliunx.configurableoreveins.network.OpenLocatorGuiMessage;
+import com.serliunx.configurableoreveins.network.message.OpenLocatorGuiMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 

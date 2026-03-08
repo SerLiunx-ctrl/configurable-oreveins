@@ -1,45 +1,46 @@
-package com.serliunx.configurableoreveins.network;
+package com.serliunx.configurableoreveins.network.message;
 
+import com.serliunx.configurableoreveins.vein.LocatorVeinInfo;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 /**
- * 同步附近矿脉缓存的网络消息。
+ * 打开矿脉定位界面的网络消息。
  *
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
 */
-public class SyncNearbyVeinsMessage implements IMessage {
-    private int dimensionId;
+public class OpenLocatorGuiMessage implements IMessage {
+
+    private int handOrdinal;
     private int rangeChunks;
     private List<LocatorVeinInfo> veins = new ArrayList<LocatorVeinInfo>();
 
-    /** 构造 SyncNearbyVeinsMessage 实例。 */
-    public SyncNearbyVeinsMessage() {}
+    public OpenLocatorGuiMessage() {}
 
     /**
-     * 构造 SyncNearbyVeinsMessage 实例。
+     * 构造 OpenLocatorGuiMessage 实例。
      *
-     * @param dimensionId 参数 dimensionId。
+     * @param handOrdinal 参数 handOrdinal。
      * @param rangeChunks 参数 rangeChunks。
      * @param veins 参数 veins。
     */
-    public SyncNearbyVeinsMessage(int dimensionId, int rangeChunks, List<LocatorVeinInfo> veins) {
-        this.dimensionId = dimensionId;
+    public OpenLocatorGuiMessage(int handOrdinal, int rangeChunks, List<LocatorVeinInfo> veins) {
+        this.handOrdinal = handOrdinal;
         this.rangeChunks = rangeChunks;
-        this.veins = veins == null ? new ArrayList<LocatorVeinInfo>() : veins;
+        this.veins = veins;
     }
 
     /**
-     * 获取 DimensionId。
+     * 获取 HandOrdinal。
      *
      * @return 处理结果。
     */
-    public int getDimensionId() {
-        return dimensionId;
+    public int getHandOrdinal() {
+        return handOrdinal;
     }
 
     /**
@@ -52,7 +53,7 @@ public class SyncNearbyVeinsMessage implements IMessage {
     }
 
     /**
-     * 获取 Veins。
+     * 获取当前矿脉配置列表。
      *
      * @return 处理结果。
     */
@@ -67,10 +68,10 @@ public class SyncNearbyVeinsMessage implements IMessage {
     */
     @Override
     public void fromBytes(ByteBuf buf) {
-        dimensionId = buf.readInt();
+        handOrdinal = buf.readInt();
         rangeChunks = buf.readInt();
         int count = buf.readInt();
-        veins = new ArrayList<LocatorVeinInfo>(count);
+        veins = new ArrayList<>(count);
         for (int index = 0; index < count; index++) {
             veins.add(LocatorVeinInfo.fromBytes(buf));
         }
@@ -83,7 +84,7 @@ public class SyncNearbyVeinsMessage implements IMessage {
     */
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeInt(dimensionId);
+        buf.writeInt(handOrdinal);
         buf.writeInt(rangeChunks);
         buf.writeInt(veins.size());
         for (LocatorVeinInfo vein : veins) {

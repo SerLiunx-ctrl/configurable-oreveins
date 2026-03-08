@@ -1,45 +1,46 @@
-package com.serliunx.configurableoreveins.network;
+package com.serliunx.configurableoreveins.network.message;
 
+import com.serliunx.configurableoreveins.vein.LocatorVeinInfo;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 /**
- * 打开矿脉定位界面的网络消息。
+ * 同步附近矿脉缓存的网络消息。
  *
  * @author <a href="mailto:serliunx@yeah.net">SerLiunx</a>
  * @version 0.0.1
  * @since 2026/3/7
 */
-public class OpenLocatorGuiMessage implements IMessage {
-    private int handOrdinal;
+public class SyncNearbyVeinsMessage implements IMessage {
+
+    private int dimensionId;
     private int rangeChunks;
     private List<LocatorVeinInfo> veins = new ArrayList<LocatorVeinInfo>();
 
-    /** 构造 OpenLocatorGuiMessage 实例。 */
-    public OpenLocatorGuiMessage() {}
+    public SyncNearbyVeinsMessage() {}
 
     /**
-     * 构造 OpenLocatorGuiMessage 实例。
+     * 构造 SyncNearbyVeinsMessage 实例。
      *
-     * @param handOrdinal 参数 handOrdinal。
+     * @param dimensionId 参数 dimensionId。
      * @param rangeChunks 参数 rangeChunks。
      * @param veins 参数 veins。
     */
-    public OpenLocatorGuiMessage(int handOrdinal, int rangeChunks, List<LocatorVeinInfo> veins) {
-        this.handOrdinal = handOrdinal;
+    public SyncNearbyVeinsMessage(int dimensionId, int rangeChunks, List<LocatorVeinInfo> veins) {
+        this.dimensionId = dimensionId;
         this.rangeChunks = rangeChunks;
-        this.veins = veins;
+        this.veins = veins == null ? new ArrayList<LocatorVeinInfo>() : veins;
     }
 
     /**
-     * 获取 HandOrdinal。
+     * 获取 DimensionId。
      *
      * @return 处理结果。
     */
-    public int getHandOrdinal() {
-        return handOrdinal;
+    public int getDimensionId() {
+        return dimensionId;
     }
 
     /**
@@ -52,7 +53,7 @@ public class OpenLocatorGuiMessage implements IMessage {
     }
 
     /**
-     * 获取当前矿脉配置列表。
+     * 获取 Veins。
      *
      * @return 处理结果。
     */
@@ -67,10 +68,10 @@ public class OpenLocatorGuiMessage implements IMessage {
     */
     @Override
     public void fromBytes(ByteBuf buf) {
-        handOrdinal = buf.readInt();
+        dimensionId = buf.readInt();
         rangeChunks = buf.readInt();
         int count = buf.readInt();
-        veins = new ArrayList<LocatorVeinInfo>(count);
+        veins = new ArrayList<>(count);
         for (int index = 0; index < count; index++) {
             veins.add(LocatorVeinInfo.fromBytes(buf));
         }
@@ -83,7 +84,7 @@ public class OpenLocatorGuiMessage implements IMessage {
     */
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeInt(handOrdinal);
+        buf.writeInt(dimensionId);
         buf.writeInt(rangeChunks);
         buf.writeInt(veins.size());
         for (LocatorVeinInfo vein : veins) {

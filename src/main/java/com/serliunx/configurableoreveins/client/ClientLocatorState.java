@@ -1,6 +1,6 @@
 package com.serliunx.configurableoreveins.client;
 
-import com.serliunx.configurableoreveins.network.LocatorVeinInfo;
+import com.serliunx.configurableoreveins.vein.LocatorVeinInfo;
 import javax.annotation.Nullable;
 
 /**
@@ -12,9 +12,9 @@ import javax.annotation.Nullable;
 */
 public final class ClientLocatorState {
 
-    @Nullable private static LocatorVeinInfo highlightedVein;
+    @Nullable
+    private static LocatorVeinInfo highlightedVein;
 
-    /** 构造 ClientLocatorState 实例。 */
     private ClientLocatorState() {}
 
     /**
