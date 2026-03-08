@@ -1,8 +1,8 @@
 package com.serliunx.configurableoreveins.command;
 
 import com.serliunx.configurableoreveins.ConfigurableOreVeinsMod;
-import com.serliunx.configurableoreveins.config.GeneralConfig;
-import com.serliunx.configurableoreveins.config.ModConfigManager;
+import com.serliunx.configurableoreveins.config.ModConfiguration;
+import com.serliunx.configurableoreveins.config.vein.ModConfigManager;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -48,7 +48,7 @@ public class OreVeinsCommand extends CommandBase {
         }
 
         ModConfigManager configManager = ConfigurableOreVeinsMod.getConfigManager();
-        GeneralConfig.sync();
+        ModConfiguration.sync();
         boolean reloaded = configManager != null && configManager.reloadNow();
         if (reloaded) {
             notifyCommandListener(

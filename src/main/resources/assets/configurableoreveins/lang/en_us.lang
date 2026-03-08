@@ -33,3 +33,8 @@ jei.configurableoreveins.ore_vein.output_weight=%s, config weight about %s%% (we
 jei.configurableoreveins.ore_vein.more_outputs=+%s more outputs
 jei.configurableoreveins.ore_vein.all_dimensions=All
 jei.configurableoreveins.ore_vein.unknown_ore=Unknown ore
+
+config.configurableoreveins.client-settings=Client Settings
+config.configurableoreveins.renderHighlightName=Render Highlight Name
+
+config.configurableoreveins.general-settings=General Settings

@@ -1,6 +1,6 @@
 package com.serliunx.configurableoreveins.world;
 
-import com.serliunx.configurableoreveins.config.GeneralConfig;
+import com.serliunx.configurableoreveins.config.ModConfiguration;
 import net.minecraftforge.event.terraingen.OreGenEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -26,38 +26,37 @@ public final class VanillaOreGenerationDisabler {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onGenerateMinable(OreGenEvent.GenerateMinable event) {
         OreGenEvent.GenerateMinable.EventType type = event.getType();
-        if (type == OreGenEvent.GenerateMinable.EventType.IRON && GeneralConfig.disableIronOre) {
+        if (type == OreGenEvent.GenerateMinable.EventType.IRON && ModConfiguration.general.disableIronOre) {
             event.setResult(Result.DENY);
             return;
         }
 
-        if (type == OreGenEvent.GenerateMinable.EventType.GOLD && GeneralConfig.disableGoldOre) {
+        if (type == OreGenEvent.GenerateMinable.EventType.GOLD && ModConfiguration.general.disableGoldOre) {
             event.setResult(Result.DENY);
             return;
         }
 
-        if (type == OreGenEvent.GenerateMinable.EventType.REDSTONE
-                && GeneralConfig.disableRedstoneOre) {
+        if (type == OreGenEvent.GenerateMinable.EventType.REDSTONE && ModConfiguration.general.disableRedstoneOre) {
             event.setResult(Result.DENY);
             return;
         }
 
-        if (type == OreGenEvent.GenerateMinable.EventType.DIAMOND && GeneralConfig.disableDiamondOre) {
+        if (type == OreGenEvent.GenerateMinable.EventType.DIAMOND && ModConfiguration.general.disableDiamondOre) {
             event.setResult(Result.DENY);
             return;
         }
 
-        if (type == OreGenEvent.GenerateMinable.EventType.LAPIS && GeneralConfig.disableLapisOre) {
+        if (type == OreGenEvent.GenerateMinable.EventType.LAPIS && ModConfiguration.general.disableLapisOre) {
             event.setResult(Result.DENY);
             return;
         }
 
-        if (type == OreGenEvent.GenerateMinable.EventType.EMERALD && GeneralConfig.disableEmeraldOre) {
+        if (type == OreGenEvent.GenerateMinable.EventType.EMERALD && ModConfiguration.general.disableEmeraldOre) {
             event.setResult(Result.DENY);
             return;
         }
 
-        if (type == OreGenEvent.GenerateMinable.EventType.COAL && GeneralConfig.disableCoalOre) {
+        if (type == OreGenEvent.GenerateMinable.EventType.COAL && ModConfiguration.general.disableCoalOre) {
             event.setResult(Result.DENY);
         }
     }

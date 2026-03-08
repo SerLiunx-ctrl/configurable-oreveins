@@ -1,7 +1,7 @@
 package com.serliunx.configurableoreveins.world;
 
-import com.serliunx.configurableoreveins.config.ModConfigManager;
-import com.serliunx.configurableoreveins.config.VeinDefinition;
+import com.serliunx.configurableoreveins.config.vein.ModConfigManager;
+import com.serliunx.configurableoreveins.config.vein.VeinDefinition;
 import com.serliunx.configurableoreveins.data.VeinWorldData;
 import com.serliunx.configurableoreveins.data.VeinWorldData.StatRecord;
 import com.serliunx.configurableoreveins.util.BlockStateResolver;

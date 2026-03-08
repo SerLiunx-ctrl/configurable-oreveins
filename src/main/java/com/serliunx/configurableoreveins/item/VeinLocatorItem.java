@@ -1,9 +1,9 @@
 package com.serliunx.configurableoreveins.item;
 
 import com.serliunx.configurableoreveins.ConfigurableOreVeinsMod;
-import com.serliunx.configurableoreveins.config.GeneralConfig;
-import com.serliunx.configurableoreveins.config.ModConfigManager;
-import com.serliunx.configurableoreveins.config.VeinDefinition;
+import com.serliunx.configurableoreveins.config.ModConfiguration;
+import com.serliunx.configurableoreveins.config.vein.ModConfigManager;
+import com.serliunx.configurableoreveins.config.vein.VeinDefinition;
 import com.serliunx.configurableoreveins.data.PlayerVeinStatusData;
 import com.serliunx.configurableoreveins.data.VeinWorldData;
 import com.serliunx.configurableoreveins.data.VeinWorldData.StatRecord;
@@ -146,8 +146,8 @@ public class VeinLocatorItem extends Item {
         }
 
         refreshAutomaticTarget(stack, world, player);
-        int rangeChunks = Math.max(1, GeneralConfig.locatorRangeChunks);
-        int maxResults = Math.max(1, GeneralConfig.locatorMaxResults);
+        int rangeChunks = Math.max(1, ModConfiguration.general.locatorRangeChunks);
+        int maxResults = Math.max(1, ModConfiguration.general.locatorMaxResults);
         java.util.ArrayList<LocatorVeinInfo> payload =
                 new java.util.ArrayList<>(
                         createNearbyVeinInfos(world, player, rangeChunks, maxResults));
@@ -334,7 +334,7 @@ public class VeinLocatorItem extends Item {
         if (hasTargetTag(stack, TARGET_TAG)) {
             return false;
         }
-        VeinRecord nearest = findNearestUnminedVein(world, player, Math.max(1, GeneralConfig.locatorRangeChunks));
+        VeinRecord nearest = findNearestUnminedVein(world, player, Math.max(1, ModConfiguration.general.locatorRangeChunks));
         if (nearest == null) {
             return clearAutomaticTarget(stack);
         }

@@ -1,6 +1,6 @@
 package com.serliunx.configurableoreveins.network.handler;
 
-import com.serliunx.configurableoreveins.config.GeneralConfig;
+import com.serliunx.configurableoreveins.config.ModConfiguration;
 import com.serliunx.configurableoreveins.item.VeinLocatorItem;
 import com.serliunx.configurableoreveins.network.NetworkHandler;
 import com.serliunx.configurableoreveins.network.message.RequestNearbyVeinsMessage;
@@ -29,8 +29,8 @@ public final class RequestNearbyVeinsMessageHandler implements IMessageHandler<R
                 .getServerWorld()
                 .addScheduledTask(
                         () -> {
-                            int rangeChunks = Math.max(1, GeneralConfig.locatorRangeChunks);
-                            int maxResults = Math.max(1, GeneralConfig.locatorMaxResults);
+                            int rangeChunks = Math.max(1, ModConfiguration.general.locatorRangeChunks);
+                            int maxResults = Math.max(1, ModConfiguration.general.locatorMaxResults);
                             List<LocatorVeinInfo> nearbyVeins =
                                     VeinLocatorItem.createNearbyVeinInfos(
                                             player.getServerWorld(), player, rangeChunks, maxResults);

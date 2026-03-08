@@ -1,4 +1,4 @@
-package com.serliunx.configurableoreveins.config;
+package com.serliunx.configurableoreveins.config.vein;
 
 import java.util.ArrayList;
 import java.util.Collections;

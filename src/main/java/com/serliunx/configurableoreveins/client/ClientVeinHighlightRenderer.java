@@ -1,6 +1,6 @@
 package com.serliunx.configurableoreveins.client;
 
-import com.serliunx.configurableoreveins.config.ClientConfig;
+import com.serliunx.configurableoreveins.config.ModConfiguration;
 import com.serliunx.configurableoreveins.vein.LocatorVeinInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -75,7 +75,7 @@ public class ClientVeinHighlightRenderer {
         GlStateManager.disableBlend();
         GlStateManager.popMatrix();
 
-        if (!ClientConfig.renderHighlightName) {
+        if (!ModConfiguration.client.renderHighlightName) {
             return;
         }
 

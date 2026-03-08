@@ -1,8 +1,8 @@
 package com.serliunx.configurableoreveins.jei;
 
 import com.serliunx.configurableoreveins.ConfigurableOreVeinsMod;
-import com.serliunx.configurableoreveins.config.ModConfigManager;
-import com.serliunx.configurableoreveins.config.VeinDefinition;
+import com.serliunx.configurableoreveins.config.vein.ModConfigManager;
+import com.serliunx.configurableoreveins.config.vein.VeinDefinition;
 import com.serliunx.configurableoreveins.item.ModItems;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;

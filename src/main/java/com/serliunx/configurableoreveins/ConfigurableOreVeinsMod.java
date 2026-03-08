@@ -1,9 +1,9 @@
 package com.serliunx.configurableoreveins;
 
 import com.serliunx.configurableoreveins.command.OreVeinsCommand;
-import com.serliunx.configurableoreveins.config.ClientConfig;
-import com.serliunx.configurableoreveins.config.GeneralConfig;
-import com.serliunx.configurableoreveins.config.ModConfigManager;
+import com.serliunx.configurableoreveins.config.ClientConfigEventHandler;
+import com.serliunx.configurableoreveins.config.ModConfiguration;
+import com.serliunx.configurableoreveins.config.vein.ModConfigManager;
 import com.serliunx.configurableoreveins.network.NetworkHandler;
 import com.serliunx.configurableoreveins.proxy.CommonProxy;
 import com.serliunx.configurableoreveins.world.ConfigurableOreWorldGenerator;
@@ -53,10 +53,13 @@ public class ConfigurableOreVeinsMod {
      * @param event 参数 event。
     */
     @Mod.EventHandler
+    @SuppressWarnings("unused")
     public void preInit(FMLPreInitializationEvent event) {
-        GeneralConfig.sync();
-        ClientConfig.sync();
+        ClientConfigEventHandler.register();
+        ModConfiguration.sync();
+
         NetworkHandler.init();
+
         File configDirectory = new File(event.getModConfigurationDirectory(), MOD_ID);
         configManager = new ModConfigManager(configDirectory);
         configManager.load();

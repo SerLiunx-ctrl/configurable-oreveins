@@ -1,8 +1,8 @@
 package com.serliunx.configurableoreveins.world;
 
-import com.serliunx.configurableoreveins.config.BlockEntry;
-import com.serliunx.configurableoreveins.config.VeinDefinition;
-import com.serliunx.configurableoreveins.config.VeinShapeConfig;
+import com.serliunx.configurableoreveins.config.vein.BlockEntry;
+import com.serliunx.configurableoreveins.config.vein.VeinDefinition;
+import com.serliunx.configurableoreveins.config.vein.VeinShapeConfig;
 import com.serliunx.configurableoreveins.util.BlockStateResolver;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;

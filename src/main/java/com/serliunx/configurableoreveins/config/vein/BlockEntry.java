@@ -1,4 +1,4 @@
-package com.serliunx.configurableoreveins.config;
+package com.serliunx.configurableoreveins.config.vein;
 
 /**
  * 矿物方块输出配置项。

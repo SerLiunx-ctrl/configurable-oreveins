@@ -1,4 +1,4 @@
-package com.serliunx.configurableoreveins.config;
+package com.serliunx.configurableoreveins.config.vein;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

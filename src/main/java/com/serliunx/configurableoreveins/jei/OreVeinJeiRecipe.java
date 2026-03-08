@@ -1,8 +1,8 @@
 package com.serliunx.configurableoreveins.jei;
 
 import com.serliunx.configurableoreveins.client.ClientNearbyVeinCache;
-import com.serliunx.configurableoreveins.config.BlockEntry;
-import com.serliunx.configurableoreveins.config.VeinDefinition;
+import com.serliunx.configurableoreveins.config.vein.BlockEntry;
+import com.serliunx.configurableoreveins.config.vein.VeinDefinition;
 import com.serliunx.configurableoreveins.util.BlockStateResolver;
 import com.serliunx.configurableoreveins.vein.LocatorVeinInfo;
 import mezz.jei.api.ingredients.IIngredients;
